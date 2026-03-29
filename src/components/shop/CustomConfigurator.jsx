@@ -1,8 +1,6 @@
 import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { Ruler, Shirt, Palette } from 'lucide-react';
+import { Ruler, Palette } from 'lucide-react';
 
 const sizeCategories = [
   {
@@ -24,25 +22,6 @@ const sizeCategories = [
   {
     category: 'Badetuch',
     options: ['100x150 cm', '100x160 cm']
-  }
-];
-
-const materialCategories = [
-  {
-    category: 'Bio-Baumwolle',
-    options: ['Bio-Baumwolle 400g/m²', 'Bio-Baumwolle 450g/m²']
-  },
-  {
-    category: 'Bio-Frottee',
-    options: ['Bio-Frottee 450g/m²', 'Bio-Frottee 500g/m²', 'Bio-Frottee 550g/m²']
-  },
-  {
-    category: 'Premium',
-    options: ['Ägyptische Bio-Baumwolle 600g/m²', 'Supima Bio-Baumwolle 650g/m²']
-  },
-  {
-    category: 'Mischgewebe',
-    options: ['Mikrofaser-Baumwoll-Mix', 'Bambus-Baumwoll-Mix 400g/m²']
   }
 ];
 
@@ -103,51 +82,24 @@ export default function CustomConfigurator({ config, onChange }) {
       {/* Size */}
       <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader icon={Ruler} label="Größe" />
-        <div className="space-y-3">
+        <div className="space-y-4">
           {sizeCategories.map((cat) => (
             <div key={cat.category}>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1.5">{cat.category}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">{cat.category}</p>
               <div className="flex flex-wrap gap-2">
                 {cat.options.map((opt) => (
                   <button
                     key={opt}
                     onClick={() => onChange({ ...config, length: opt })}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-sm border transition-all duration-150",
+                      "w-24 h-24 rounded-xl text-sm border flex flex-col items-center justify-center gap-1 transition-all duration-150 font-medium leading-tight text-center px-2",
                       config.length === opt
-                        ? "border-primary bg-primary text-primary-foreground font-medium"
-                        : "border-border bg-background text-foreground hover:border-primary/50"
+                        ? "border-primary bg-primary text-primary-foreground shadow-md"
+                        : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
                     )}
                   >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Material */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <SectionHeader icon={Shirt} label="Stoff" />
-        <div className="space-y-3">
-          {materialCategories.map((cat) => (
-            <div key={cat.category}>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1.5">{cat.category}</p>
-              <div className="flex flex-wrap gap-2">
-                {cat.options.map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => onChange({ ...config, material: opt })}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg text-sm border transition-all duration-150",
-                      config.material === opt
-                        ? "border-primary bg-primary text-primary-foreground font-medium"
-                        : "border-border bg-background text-foreground hover:border-primary/50"
-                    )}
-                  >
-                    {opt}
+                    {opt.split(' ')[0]}
+                    {opt.includes(' ') && <span className="text-xs opacity-70">{opt.split(' ').slice(1).join(' ')}</span>}
                   </button>
                 ))}
               </div>

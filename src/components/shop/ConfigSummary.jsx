@@ -1,8 +1,9 @@
 import React from 'react';
 import { Ruler, Palette, Shirt, Sparkles } from 'lucide-react';
 
+
 export default function ConfigSummary({ config, logoUrl, variant }) {
-  if (!variant && !config.length && !config.color && !config.material) return null;
+  if (!variant && !config.length && !config.color) return null;
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
@@ -30,13 +31,11 @@ export default function ConfigSummary({ config, logoUrl, variant }) {
             <span className="text-foreground font-medium">{config.color}</span>
           </div>
         )}
-        {config.material && (
-          <div className="flex items-center gap-3 text-sm">
-            <Shirt className="w-4 h-4 text-primary shrink-0" />
-            <span className="text-muted-foreground">Stoff:</span>
-            <span className="text-foreground font-medium">{config.material}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3 text-sm">
+          <Shirt className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-muted-foreground">Stoff:</span>
+          <span className="text-foreground font-medium">100% Baumwolle</span>
+        </div>
         {logoUrl && (
           <div className="flex items-center gap-3 text-sm">
             <div className="w-10 h-10 rounded-lg border border-border bg-white overflow-hidden shrink-0">
