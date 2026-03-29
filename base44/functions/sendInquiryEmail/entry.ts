@@ -2,19 +2,26 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 Deno.serve(async (req) => {
   try {
-    const { to, subject, body } = await req.json();
+    const base44 = createClientFromRequest(req);
+
+    const { to, subject, html } = await req.json();
+
+    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+    if (!RESEND_API_KEY) {
+      return Response.json({ error: 'RESEND_API_KEY not set' }, { status: 500 });
+    }
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         from: 'Absolut Hübbers <onboarding@resend.dev>',
-        to: [to],
+        to,
         subject,
-        html: body,
+        html,
       }),
     });
 
@@ -24,7 +31,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: data }, { status: res.status });
     }
 
-    return Response.json({ success: true, id: data.id });
+    return Response.json({ success: true, data });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
