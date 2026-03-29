@@ -23,7 +23,7 @@ export default function ShopHeader({ heroImage }) {
             personalisierte Handtücher vom Profi
           </p>
           <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl text-primary-foreground font-bold leading-tight mb-6">
-            Personalisierte<br />Öko-Handtücher
+            Handtuch24.store
           </h1>
           <p className="text-primary-foreground/80 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
             Nachhaltige Handtücher mit Ihrem Logo — das Werbemittel, das täglich benutzt wird.
