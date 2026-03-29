@@ -98,7 +98,7 @@ ${logoUrl ? `<p><strong>Logo:</strong> <a href="${logoUrl}">Logo ansehen</a></p>
 ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
     `.trim();
 
-    await base44.integrations.Core.SendEmail({
+    await base44.functions.invoke('sendInquiryEmail', {
       to: PRODUCER_EMAIL,
       subject: `Neue Handtuch-Anfrage von ${contact.company_name}`,
       body: emailBody
