@@ -53,8 +53,8 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <AuthenticatedApp />
+          <CookieBanner />
         </Router>
-        <CookieBanner />
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Cookie } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,9 +49,9 @@ export default function CookieBanner() {
                   Sie können selbst entscheiden, welche Kategorien Sie zulassen möchten. Bitte beachten Sie,
                   dass auf Basis Ihrer Einstellungen womöglich nicht mehr alle Funktionalitäten der Seite zur
                   Verfügung stehen. Weitere Informationen finden Sie in unserer{' '}
-                  <Link to="/datenschutz" className="underline hover:text-primary transition-colors">
+                  <a href="/datenschutz" className="underline hover:text-primary transition-colors">
                     Datenschutzerklärung
-                  </Link>
+                  </a>
                   .
                 </p>
 
