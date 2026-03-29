@@ -13,6 +13,7 @@ import ConfigSummary from '@/components/shop/ConfigSummary';
 import TowelPreview from '@/components/shop/TowelPreview';
 import ContactForm from '@/components/shop/ContactForm';
 import SuccessMessage from '@/components/shop/SuccessMessage';
+import SuccessToast from '@/components/shop/SuccessToast';
 import FAQ from '@/components/shop/FAQ';
 import PhotoGallery from '@/components/shop/PhotoGallery';
 
@@ -28,6 +29,7 @@ export default function Home() {
   const [step, setStep] = useState(1); // 1 = config, 2 = contact
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [contact, setContact] = useState({
     company_name: '', contact_name: '', contact_email: '',
     contact_phone: '', quantity: '', notes: '', privacy_accepted: false
@@ -117,6 +119,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
 
     setSubmitting(false);
     setSubmitted(true);
+    setShowToast(true);
   };
 
   const handleReset = () => {
@@ -220,6 +223,8 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
           </AnimatePresence>
         </div>
       </section>
+
+      <SuccessToast visible={showToast} onClose={() => setShowToast(false)} />
 
       <PhotoGallery />
       <FAQ />
