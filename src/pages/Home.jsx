@@ -98,7 +98,8 @@ ${logoUrl ? `<p><strong>Logo:</strong> <a href="${logoUrl}">Logo ansehen</a></p>
 ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
     `.trim();
 
-    await fetch('https://api.resend.com/emails', {
+    // Email via Resend (best-effort, does not block success screen)
+    fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
@@ -110,7 +111,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
         subject: `Neue Handtuch-Anfrage von ${contact.company_name}`,
         html: emailBody,
       }),
-    });
+    }).catch(() => {});
 
     setSubmitting(false);
     setSubmitted(true);
