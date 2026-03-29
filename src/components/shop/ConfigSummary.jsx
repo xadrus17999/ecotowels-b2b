@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ruler, Palette, Shirt, Sparkles, Clock } from 'lucide-react';
+import { Ruler, Palette, Sparkles, Clock } from 'lucide-react';
 
 
 export default function ConfigSummary({ config, logoUrl, variant }) {
@@ -31,11 +31,7 @@ export default function ConfigSummary({ config, logoUrl, variant }) {
             <span className="text-foreground font-medium">{config.color}</span>
           </div>
         )}
-        <div className="flex items-center gap-3 text-sm">
-          <Shirt className="w-4 h-4 text-primary shrink-0" />
-          <span className="text-muted-foreground">Stoff:</span>
-          <span className="text-foreground font-medium">100% Baumwolle</span>
-        </div>
+
         <div className="flex items-center gap-3 text-sm">
           <Clock className="w-4 h-4 text-primary shrink-0" />
           <span className="text-muted-foreground">Lieferzeit:</span>

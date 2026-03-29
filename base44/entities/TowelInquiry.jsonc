@@ -2,29 +2,17 @@
   "name": "TowelInquiry",
   "type": "object",
   "properties": {
-    "configuration_type": {
+    "finishing_variant": {
       "type": "string",
-      "enum": [
-        "preset",
-        "custom"
-      ],
-      "description": "Whether the customer chose a preset or custom configuration"
+      "description": "The chosen finishing/embellishment variant (e.g. Bestickt, HochTief Webung, Bord\u00fcr Einwebung)"
     },
-    "preset_name": {
+    "towel_size": {
       "type": "string",
-      "description": "Name of the chosen preset if applicable"
-    },
-    "towel_length": {
-      "type": "string",
-      "description": "Length/size of the towel"
+      "description": "Size of the towel (e.g. 50x100 cm)"
     },
     "towel_color": {
       "type": "string",
       "description": "Color of the towel"
-    },
-    "towel_material": {
-      "type": "string",
-      "description": "Material/fabric of the towel"
     },
     "logo_url": {
       "type": "string",
@@ -72,9 +60,8 @@
     }
   },
   "required": [
-    "towel_length",
+    "towel_size",
     "towel_color",
-    "towel_material",
     "quantity",
     "company_name",
     "contact_name",

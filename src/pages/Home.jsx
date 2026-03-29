@@ -10,6 +10,7 @@ import PresetSelector from '@/components/shop/PresetSelector';
 import CustomConfigurator from '@/components/shop/CustomConfigurator';
 import LogoUploader from '@/components/shop/LogoUploader';
 import ConfigSummary from '@/components/shop/ConfigSummary';
+import TowelPreview from '@/components/shop/TowelPreview';
 import ContactForm from '@/components/shop/ContactForm';
 import SuccessMessage from '@/components/shop/SuccessMessage';
 import FAQ from '@/components/shop/FAQ';
@@ -22,7 +23,7 @@ const detailImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b
 
 export default function Home() {
   const [selectedVariant, setSelectedVariant] = useState(null);
-  const [customConfig, setCustomConfig] = useState({ length: '', color: '', material: '' });
+  const [customConfig, setCustomConfig] = useState({ length: '', color: '' });
   const [logoUrl, setLogoUrl] = useState('');
   const [step, setStep] = useState(1); // 1 = config, 2 = contact
   const [submitted, setSubmitted] = useState(false);
@@ -64,11 +65,9 @@ export default function Home() {
     setSubmitting(true);
 
     const inquiryData = {
-      configuration_type: 'custom',
-      preset_name: selectedVariant?.name || '',
-      towel_length: activeConfig.length,
+      finishing_variant: selectedVariant?.name || '',
+      towel_size: activeConfig.length,
       towel_color: activeConfig.color,
-      towel_material: activeConfig.material,
       logo_url: logoUrl,
       quantity: parseInt(contact.quantity.replace(/[^0-9]/g, '')) || 0,
       company_name: contact.company_name,
@@ -89,7 +88,6 @@ export default function Home() {
 <p><strong>Veredelungs-Variante:</strong> ${selectedVariant?.name || '—'}</p>
 <p><strong>Größe:</strong> ${activeConfig.length}</p>
 <p><strong>Farbe:</strong> ${activeConfig.color}</p>
-<p><strong>Stoff:</strong> ${activeConfig.material}</p>
 ${logoUrl ? `<p><strong>Logo:</strong> <a href="${logoUrl}">Logo ansehen</a></p>` : '<p><strong>Logo:</strong> Keins hochgeladen</p>'}
 <hr>
 <h3>Kontaktdaten</h3>
@@ -123,7 +121,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
 
   const handleReset = () => {
     setSelectedVariant(null);
-    setCustomConfig({ length: '', color: '', material: '' });
+    setCustomConfig({ length: '', color: '' });
     setLogoUrl('');
     setStep(1);
     setSubmitted(false);
@@ -170,6 +168,8 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                   <CustomConfigurator config={customConfig} onChange={setCustomConfig} />
 
                   <LogoUploader logoUrl={logoUrl} onUpload={setLogoUrl} />
+
+                  <TowelPreview variant={selectedVariant} color={activeConfig.color} size={activeConfig.length} />
 
                   <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} />
 
