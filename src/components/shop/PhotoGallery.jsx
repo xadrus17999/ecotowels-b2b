@@ -30,7 +30,7 @@ const photos = [
 
 export default function PhotoGallery() {
   return (
-    <section className="py-16 md:py-20 bg-muted/20">
+    <section className="py-16 md:py-20 bg-background">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
           <p className="text-primary text-sm font-medium tracking-[0.2em] uppercase mb-3">Impressionen</p>

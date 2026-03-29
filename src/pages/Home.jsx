@@ -138,7 +138,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
       <InfoSection detailImage={detailImage} />
 
       {/* Configurator */}
-      <section id="konfigurator" className="py-20 md:py-28 bg-muted/30">
+      <section id="konfigurator" className="py-20 md:py-28 bg-secondary/40">
         <div className="max-w-4xl mx-auto px-6">
           <AnimatePresence mode="wait">
             {submitted ? (

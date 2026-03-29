@@ -74,7 +74,7 @@ function FAQItem({ item, index }) {
 
 export default function FAQ() {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-16 md:py-24 bg-secondary/40">
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-10">
           <p className="text-primary text-sm font-medium tracking-[0.2em] uppercase mb-3">FAQ</p>
