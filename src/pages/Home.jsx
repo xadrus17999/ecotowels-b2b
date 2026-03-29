@@ -197,10 +197,13 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
 
       {/* Footer */}
       <footer className="py-10 border-t border-border bg-background">
-        <div className="max-w-6xl mx-auto px-6 text-center">
+        <div className="max-w-6xl mx-auto px-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} — Personalisierte Öko-Handtücher für Ihr Unternehmen
+            © {new Date().getFullYear()} Absolut Hübbers — Personalisierte Öko-Handtücher für Ihr Unternehmen
           </p>
+          <a href="/impressum" className="text-xs text-muted-foreground/70 hover:text-foreground underline underline-offset-2 transition-colors">
+            Impressum
+          </a>
         </div>
       </footer>
     </div>

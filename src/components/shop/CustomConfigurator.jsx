@@ -82,29 +82,25 @@ export default function CustomConfigurator({ config, onChange }) {
       {/* Size */}
       <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader icon={Ruler} label="Größe" />
-        <div className="space-y-4">
-          {sizeCategories.map((cat) => (
-            <div key={cat.category}>
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">{cat.category}</p>
-              <div className="flex flex-wrap gap-2">
-                {cat.options.map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => onChange({ ...config, length: opt })}
-                    className={cn(
-                      "w-24 h-24 rounded-xl text-sm border flex flex-col items-center justify-center gap-1 transition-all duration-150 font-medium leading-tight text-center px-2",
-                      config.length === opt
-                        ? "border-primary bg-primary text-primary-foreground shadow-md"
-                        : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
-                    )}
-                  >
-                    {opt.split(' ')[0]}
-                    {opt.includes(' ') && <span className="text-xs opacity-70">{opt.split(' ').slice(1).join(' ')}</span>}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {sizeCategories.map((cat) =>
+            cat.options.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => onChange({ ...config, length: opt })}
+                title={cat.category}
+                className={cn(
+                  "w-24 h-20 rounded-xl text-xs border flex flex-col items-center justify-center gap-0.5 transition-all duration-150 font-medium leading-tight text-center px-2",
+                  config.length === opt
+                    ? "border-primary bg-primary text-primary-foreground shadow-md"
+                    : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+                )}
+              >
+                <span className="font-semibold">{opt}</span>
+                <span className="text-[10px] opacity-60">{cat.category}</span>
+              </button>
+            ))
+          )}
         </div>
       </div>
 
