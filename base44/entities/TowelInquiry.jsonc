@@ -1,0 +1,78 @@
+{
+  "name": "TowelInquiry",
+  "type": "object",
+  "properties": {
+    "configuration_type": {
+      "type": "string",
+      "enum": [
+        "preset",
+        "custom"
+      ],
+      "description": "Whether the customer chose a preset or custom configuration"
+    },
+    "preset_name": {
+      "type": "string",
+      "description": "Name of the chosen preset if applicable"
+    },
+    "towel_length": {
+      "type": "string",
+      "description": "Length/size of the towel"
+    },
+    "towel_color": {
+      "type": "string",
+      "description": "Color of the towel"
+    },
+    "towel_material": {
+      "type": "string",
+      "description": "Material/fabric of the towel"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL of the uploaded logo"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Number of towels requested"
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Company name of the customer"
+    },
+    "contact_name": {
+      "type": "string",
+      "description": "Full name of the contact person"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Email address of the contact person"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Phone number of the contact person"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes or requests"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "neu",
+        "in_bearbeitung",
+        "angebot_gesendet",
+        "abgeschlossen"
+      ],
+      "default": "neu",
+      "description": "Status of the inquiry"
+    }
+  },
+  "required": [
+    "towel_length",
+    "towel_color",
+    "towel_material",
+    "quantity",
+    "company_name",
+    "contact_name",
+    "contact_email"
+  ]
+}
