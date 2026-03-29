@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette } from 'lucide-react';
 
@@ -77,6 +77,15 @@ function SectionHeader({ icon: Icon, label }) {
 }
 
 export default function CustomConfigurator({ config, onChange }) {
+  const colorSectionRef = useRef(null);
+
+  const handleSizeSelect = (opt) => {
+    onChange({ ...config, length: opt });
+    setTimeout(() => {
+      colorSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  };
+
   return (
     <div className="space-y-8">
       {/* Size */}
@@ -86,8 +95,8 @@ export default function CustomConfigurator({ config, onChange }) {
           {sizeCategories.map((cat) =>
             cat.options.map((opt) => (
               <button
-                key={opt}
-                onClick={() => onChange({ ...config, length: opt })}
+              key={opt}
+              onClick={() => handleSizeSelect(opt)}
                 title={cat.category}
                 className={cn(
                   "w-24 h-20 rounded-xl text-xs border flex flex-col items-center justify-center gap-0.5 transition-all duration-150 font-medium leading-tight text-center px-2",
@@ -105,7 +114,7 @@ export default function CustomConfigurator({ config, onChange }) {
       </div>
 
       {/* Color */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
         <SectionHeader icon={Palette} label="Farbe" />
         <div className="space-y-4">
           {colorCategories.map((cat) => (

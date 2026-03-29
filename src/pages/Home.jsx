@@ -31,11 +31,20 @@ export default function Home() {
   });
 
   const activeConfig = customConfig;
-  const isConfigValid = selectedVariant && activeConfig.length && activeConfig.color && activeConfig.material;
+  const isConfigValid = selectedVariant && activeConfig.length && activeConfig.color;
+
+  const getMissingFields = () => {
+    const missing = [];
+    if (!selectedVariant) missing.push('Veredelungs-Variante');
+    if (!activeConfig.length) missing.push('Größe');
+    if (!activeConfig.color) missing.push('Farbe');
+    return missing;
+  };
 
   const handleNext = () => {
-    if (!isConfigValid) {
-      toast.error('Bitte füllen Sie alle Konfigurationsfelder aus.');
+    const missing = getMissingFields();
+    if (missing.length > 0) {
+      toast.error(`Bitte noch ausfüllen: ${missing.join(', ')}`);
       return;
     }
     setStep(2);
@@ -152,11 +161,15 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                   <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} />
 
                   {step === 1 && (
-                    <div className="text-center pt-4">
+                    <div className="text-center pt-4 space-y-2">
+                      {!isConfigValid && (
+                        <p className="text-sm text-muted-foreground">
+                          Noch ausfüllen: <span className="text-accent font-medium">{getMissingFields().join(', ')}</span>
+                        </p>
+                      )}
                       <button
                         onClick={handleNext}
-                        disabled={!isConfigValid}
-                        className="inline-flex items-center px-10 py-4 bg-primary text-primary-foreground rounded-full font-medium text-sm tracking-wide hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="inline-flex items-center px-10 py-4 bg-primary text-primary-foreground rounded-full font-medium text-sm tracking-wide hover:opacity-90 transition-all"
                       >
                         Weiter zu Kontaktdaten
                       </button>
