@@ -13,7 +13,7 @@ import ConfigSummary from '@/components/shop/ConfigSummary';
 import ContactForm from '@/components/shop/ContactForm';
 import SuccessMessage from '@/components/shop/SuccessMessage';
 
-const PRODUCER_EMAIL = 'info@example.com'; // Replace with actual email
+const PRODUCER_EMAIL = 'xadrus15@googlemail.com';
 
 const heroImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b1787/e0610fa0c_generated_66ff1638.png';
 const detailImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b1787/a5dac2a69_generated_919e919b.png';
@@ -98,10 +98,18 @@ ${logoUrl ? `<p><strong>Logo:</strong> <a href="${logoUrl}">Logo ansehen</a></p>
 ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
     `.trim();
 
-    await base44.functions.invoke('sendInquiryEmail', {
-      to: PRODUCER_EMAIL,
-      subject: `Neue Handtuch-Anfrage von ${contact.company_name}`,
-      body: emailBody
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Absolut Hübbers <onboarding@resend.dev>',
+        to: [PRODUCER_EMAIL],
+        subject: `Neue Handtuch-Anfrage von ${contact.company_name}`,
+        html: emailBody,
+      }),
     });
 
     setSubmitting(false);
