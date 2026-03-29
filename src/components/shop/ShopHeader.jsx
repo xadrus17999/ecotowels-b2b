@@ -20,7 +20,7 @@ export default function ShopHeader({ heroImage }) {
           transition={{ duration: 0.8 }}
         >
           <p className="text-primary-foreground/70 text-sm font-body tracking-[0.3em] uppercase mb-4">
-            Premium B2B Werbemittel
+            personalisierte Handtücher vom Profi
           </p>
           <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl text-primary-foreground font-bold leading-tight mb-6">
             Personalisierte<br />Öko-Handtücher
