@@ -16,8 +16,8 @@ import SuccessMessage from '@/components/shop/SuccessMessage';
 
 const PRODUCER_EMAIL = 'info@example.com'; // Replace with actual email
 
-const heroImage = '/__generating__/img_97b75097c3e7.png';
-const detailImage = '/__generating__/img_1575a5c13644.png';
+const heroImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b1787/e0610fa0c_generated_66ff1638.png';
+const detailImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b1787/a5dac2a69_generated_919e919b.png';
 
 export default function Home() {
   const [mode, setMode] = useState('preset');
