@@ -12,7 +12,7 @@ const quantities = [
 ];
 
 export default function ContactForm({ contact, onChange, onSubmit, submitting }) {
-  const [accepted, setAccepted] = useState(false);
+  const accepted = !!contact.privacy_accepted;
 
   const handleSubmit = () => {
     if (!accepted) return;
@@ -95,7 +95,7 @@ export default function ContactForm({ contact, onChange, onSubmit, submitting })
         <Checkbox
           id="datenschutz"
           checked={accepted}
-          onCheckedChange={(v) => setAccepted(!!v)}
+          onCheckedChange={(v) => onChange({ ...contact, privacy_accepted: !!v })}
           className="mt-0.5 shrink-0"
         />
         <label htmlFor="datenschutz" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">

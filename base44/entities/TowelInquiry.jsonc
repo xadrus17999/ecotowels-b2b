@@ -54,6 +54,11 @@
       "type": "string",
       "description": "Additional notes or requests"
     },
+    "privacy_accepted": {
+      "type": "boolean",
+      "description": "Whether the customer accepted the privacy policy",
+      "default": false
+    },
     "status": {
       "type": "string",
       "enum": [

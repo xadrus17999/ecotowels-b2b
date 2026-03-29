@@ -29,7 +29,7 @@ export default function Home() {
   const [submitting, setSubmitting] = useState(false);
   const [contact, setContact] = useState({
     company_name: '', contact_name: '', contact_email: '',
-    contact_phone: '', quantity: '', notes: ''
+    contact_phone: '', quantity: '', notes: '', privacy_accepted: false
   });
 
   const activeConfig = customConfig;
@@ -76,6 +76,7 @@ export default function Home() {
       contact_email: contact.contact_email,
       contact_phone: contact.contact_phone,
       notes: contact.notes,
+      privacy_accepted: contact.privacy_accepted,
       status: 'neu'
     };
 
@@ -98,6 +99,7 @@ ${logoUrl ? `<p><strong>Logo:</strong> <a href="${logoUrl}">Logo ansehen</a></p>
 <p><strong>Telefon:</strong> ${contact.contact_phone || '—'}</p>
 <p><strong>Stückzahl:</strong> ${contact.quantity}</p>
 ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
+<p><strong>Datenschutz akzeptiert:</strong> ${contact.privacy_accepted ? 'Ja' : 'Nein'}</p>
     `.trim();
 
     // Email via Resend (best-effort, does not block success screen)
