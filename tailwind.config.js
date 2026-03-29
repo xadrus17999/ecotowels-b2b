@@ -91,7 +91,9 @@ module.exports = {
   },
   safelist: [
     'bg-gray-700', 'bg-amber-50', 'bg-amber-200', 'bg-emerald-300', 'bg-blue-900',
-    'bg-orange-600', 'bg-black', 'bg-red-900'
+    'bg-orange-600', 'bg-black', 'bg-red-900', 'bg-yellow-50', 'bg-gray-200',
+    'bg-amber-600', 'bg-yellow-900', 'bg-green-700', 'bg-teal-200', 'bg-blue-600',
+    'bg-blue-200', 'bg-purple-600'
   ],
   plugins: [require("tailwindcss-animate")],
 }

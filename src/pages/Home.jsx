@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Wrench } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 import ShopHeader from '@/components/shop/ShopHeader';
 import InfoSection from '@/components/shop/InfoSection';
@@ -20,8 +19,7 @@ const heroImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b17
 const detailImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b1787/a5dac2a69_generated_919e919b.png';
 
 export default function Home() {
-  const [mode, setMode] = useState('preset');
-  const [selectedPreset, setSelectedPreset] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
   const [customConfig, setCustomConfig] = useState({ length: '', color: '', material: '' });
   const [logoUrl, setLogoUrl] = useState('');
   const [step, setStep] = useState(1); // 1 = config, 2 = contact
@@ -32,11 +30,8 @@ export default function Home() {
     contact_phone: '', quantity: '', notes: ''
   });
 
-  const activeConfig = mode === 'preset' && selectedPreset
-    ? { length: selectedPreset.length, color: selectedPreset.color, material: selectedPreset.material }
-    : customConfig;
-
-  const isConfigValid = activeConfig.length && activeConfig.color && activeConfig.material;
+  const activeConfig = customConfig;
+  const isConfigValid = selectedVariant && activeConfig.length && activeConfig.color && activeConfig.material;
 
   const handleNext = () => {
     if (!isConfigValid) {
@@ -58,8 +53,8 @@ export default function Home() {
     setSubmitting(true);
 
     const inquiryData = {
-      configuration_type: mode,
-      preset_name: mode === 'preset' ? selectedPreset?.name : '',
+      configuration_type: 'custom',
+      preset_name: selectedVariant?.name || '',
       towel_length: activeConfig.length,
       towel_color: activeConfig.color,
       towel_material: activeConfig.material,
@@ -79,7 +74,7 @@ export default function Home() {
 <h2>Neue Handtuch-Anfrage</h2>
 <hr>
 <h3>Konfiguration</h3>
-<p><strong>Typ:</strong> ${mode === 'preset' ? `Preset — ${selectedPreset?.name}` : 'Individuell'}</p>
+<p><strong>Veredelungs-Variante:</strong> ${selectedVariant?.name || '—'}</p>
 <p><strong>Größe:</strong> ${activeConfig.length}</p>
 <p><strong>Farbe:</strong> ${activeConfig.color}</p>
 <p><strong>Stoff:</strong> ${activeConfig.material}</p>
@@ -105,8 +100,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
   };
 
   const handleReset = () => {
-    setMode('preset');
-    setSelectedPreset(null);
+    setSelectedVariant(null);
     setCustomConfig({ length: '', color: '', material: '' });
     setLogoUrl('');
     setStep(1);
@@ -143,50 +137,19 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                     Ihr Handtuch gestalten
                   </h2>
                   <p className="text-muted-foreground max-w-lg mx-auto">
-                    Wählen Sie eines unserer bewährten Presets oder erstellen Sie Ihre eigene Konfiguration.
+                    Wählen Sie Ihre Veredelungs-Variante und stellen Sie Größe, Stoff und Farbe nach Ihren Wünschen zusammen.
                   </p>
                 </div>
 
                 {/* Step 1: Configuration */}
                 <div className="space-y-8">
-                  <Tabs value={mode} onValueChange={(v) => { setMode(v); setSelectedPreset(null); }}>
-                    <TabsList className="w-full max-w-sm mx-auto grid grid-cols-2 bg-muted">
-                      <TabsTrigger value="preset" className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        Presets
-                      </TabsTrigger>
-                      <TabsTrigger value="custom" className="flex items-center gap-2">
-                        <Wrench className="w-4 h-4" />
-                        Individuell
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+                  <PresetSelector selected={selectedVariant} onSelect={setSelectedVariant} />
 
-                  <AnimatePresence mode="wait">
-                    {mode === 'preset' ? (
-                      <motion.div
-                        key="preset"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                      >
-                        <PresetSelector selected={selectedPreset} onSelect={setSelectedPreset} />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="custom"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                      >
-                        <CustomConfigurator config={customConfig} onChange={setCustomConfig} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <CustomConfigurator config={customConfig} onChange={setCustomConfig} />
 
                   <LogoUploader logoUrl={logoUrl} onUpload={setLogoUrl} />
 
-                  <ConfigSummary config={activeConfig} logoUrl={logoUrl} />
+                  <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} />
 
                   {step === 1 && (
                     <div className="text-center pt-4">
