@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Send, Loader2 } from 'lucide-react';
 
 const quantities = [
@@ -11,6 +12,13 @@ const quantities = [
 ];
 
 export default function ContactForm({ contact, onChange, onSubmit, submitting }) {
+  const [accepted, setAccepted] = useState(false);
+
+  const handleSubmit = () => {
+    if (!accepted) return;
+    onSubmit();
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid sm:grid-cols-2 gap-5">
@@ -83,9 +91,25 @@ export default function ContactForm({ contact, onChange, onSubmit, submitting })
         />
       </div>
 
+      <div className={`flex items-start gap-3 p-4 rounded-xl border ${accepted ? 'border-primary/30 bg-primary/5' : 'border-border bg-muted/30'}`}>
+        <Checkbox
+          id="datenschutz"
+          checked={accepted}
+          onCheckedChange={(v) => setAccepted(!!v)}
+          className="mt-0.5 shrink-0"
+        />
+        <label htmlFor="datenschutz" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+          Ich habe die{' '}
+          <a href="/datenschutz" target="_blank" className="underline hover:text-foreground transition-colors">
+            Datenschutzerklärung
+          </a>{' '}
+          gelesen und akzeptiere, dass meine Daten zur Kontaktaufnahme gespeichert werden. Eine Anfrage stellt noch keinen verbindlichen Vertrag dar. <span className="text-destructive">*</span>
+        </label>
+      </div>
+
       <Button
-        onClick={onSubmit}
-        disabled={submitting}
+        onClick={handleSubmit}
+        disabled={submitting || !accepted}
         size="lg"
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-base font-medium rounded-xl"
       >
