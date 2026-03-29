@@ -12,6 +12,7 @@ import LogoUploader from '@/components/shop/LogoUploader';
 import ConfigSummary from '@/components/shop/ConfigSummary';
 import ContactForm from '@/components/shop/ContactForm';
 import SuccessMessage from '@/components/shop/SuccessMessage';
+import FAQ from '@/components/shop/FAQ';
 
 const PRODUCER_EMAIL = 'xadrus15@googlemail.com';
 
@@ -216,6 +217,8 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
           </AnimatePresence>
         </div>
       </section>
+
+      <FAQ />
 
       {/* Footer */}
       <footer className="py-10 border-t border-border bg-background">
