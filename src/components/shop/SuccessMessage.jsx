@@ -18,7 +18,7 @@ export default function SuccessMessage({ onReset }) {
       </h3>
       <p className="text-muted-foreground max-w-md mx-auto mb-8 leading-relaxed">
         Vielen Dank für Ihr Interesse. Wir haben Ihre Konfiguration erhalten und melden uns
-        innerhalb von 24 Stunden mit einem individuellen Angebot bei Ihnen.
+        innerhalb von 2–3 Werktagen mit einem individuellen Angebot bei Ihnen.
       </p>
       <Button
         variant="outline"

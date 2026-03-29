@@ -4,6 +4,11 @@ import { ChevronDown, Package, Truck, Paintbrush, BadgeCheck, MessageCircle, Rep
 
 const faqs = [
   {
+    icon: MessageCircle,
+    question: 'Wie kann ich Sie telefonisch erreichen?',
+    answer: 'Sie erreichen uns telefonisch Montag bis Freitag von 09:00 bis 18:00 Uhr. Außerhalb der Geschäftszeiten können Sie uns gerne eine Anfrage über das Formular senden — wir melden uns innerhalb von 2–3 Werktagen.'
+  },
+  {
     icon: Package,
     question: 'Was ist die Mindestbestellmenge?',
     answer: 'Die Mindestbestellmenge beträgt 50 Stück pro Artikel. Bei einem Mindestbestellwert von 400,00 € netto. Für größere Mengen gewähren wir attraktive Staffelpreise — fragen Sie uns gerne an.'

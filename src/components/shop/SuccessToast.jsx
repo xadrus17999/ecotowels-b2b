@@ -49,7 +49,7 @@ export default function SuccessToast({ visible, onClose }) {
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-foreground text-sm">Anfrage gesendet!</p>
             <p className="text-muted-foreground text-xs mt-0.5 leading-relaxed">
-              Wir melden uns innerhalb von 24 Stunden mit Ihrem Angebot.
+              Wir melden uns innerhalb von 2–3 Werktagen mit Ihrem Angebot.
             </p>
           </div>
 

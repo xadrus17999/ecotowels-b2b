@@ -14,6 +14,7 @@ import TowelPreview from '@/components/shop/TowelPreview';
 import ContactForm from '@/components/shop/ContactForm';
 import SuccessMessage from '@/components/shop/SuccessMessage';
 import SuccessToast from '@/components/shop/SuccessToast';
+import FloatingPhoneButton from '@/components/shop/FloatingPhoneButton';
 import FAQ from '@/components/shop/FAQ';
 import PhotoGallery from '@/components/shop/PhotoGallery';
 
@@ -225,6 +226,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
       </section>
 
       <SuccessToast visible={showToast} onClose={() => setShowToast(false)} />
+      <FloatingPhoneButton />
 
       <PhotoGallery />
       <FAQ />
