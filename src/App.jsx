@@ -8,6 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Home from './pages/Home';
 import Impressum from './pages/Impressum';
 import Datenschutz from './pages/Datenschutz';
+import CookieBanner from './components/CookieBanner';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -53,6 +54,7 @@ function App() {
         <Router>
           <AuthenticatedApp />
         </Router>
+        <CookieBanner />
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>
