@@ -8,6 +8,7 @@ import ShopHeader from '@/components/shop/ShopHeader';
 import InfoSection from '@/components/shop/InfoSection';
 import PresetSelector from '@/components/shop/PresetSelector';
 import CustomConfigurator from '@/components/shop/CustomConfigurator';
+import QuantitySelector from '@/components/shop/QuantitySelector';
 import LogoUploader from '@/components/shop/LogoUploader';
 import ConfigSummary from '@/components/shop/ConfigSummary';
 import TowelPreview from '@/components/shop/TowelPreview';
@@ -26,6 +27,7 @@ const detailImage = 'https://media.base44.com/images/public/69c93819dabe2e39886b
 export default function Home() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [customConfig, setCustomConfig] = useState({ length: '', color: '' });
+  const [quantity, setQuantity] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [step, setStep] = useState(1); // 1 = config, 2 = contact
   const [submitted, setSubmitted] = useState(false);
@@ -44,6 +46,7 @@ export default function Home() {
     if (!selectedVariant) missing.push('Veredelungs-Variante');
     if (!activeConfig.length) missing.push('Größe');
     if (!activeConfig.color) missing.push('Farbe');
+    if (!quantity) missing.push('Stückzahl');
     return missing;
   };
 
@@ -53,6 +56,7 @@ export default function Home() {
       toast.error(`Bitte noch ausfüllen: ${missing.join(', ')}`);
       return;
     }
+    setContact(prev => ({ ...prev, quantity }));
     setStep(2);
     setTimeout(() => {
       document.getElementById('kontakt')?.scrollIntoView({ behavior: 'smooth' });
@@ -124,6 +128,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
   const handleReset = () => {
     setSelectedVariant(null);
     setCustomConfig({ length: '', color: '' });
+    setQuantity('');
     setLogoUrl('');
     setStep(1);
     setSubmitted(false);
@@ -169,11 +174,13 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
 
                   <CustomConfigurator config={customConfig} onChange={setCustomConfig} />
 
+                  <QuantitySelector value={quantity} onChange={setQuantity} />
+
                   <LogoUploader logoUrl={logoUrl} onUpload={setLogoUrl} />
 
                   <TowelPreview variant={selectedVariant} color={activeConfig.color} size={activeConfig.length} />
 
-                  <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} />
+                  <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} quantity={quantity} />
 
                   {step === 1 && (
                     <div className="text-center pt-4 space-y-2">

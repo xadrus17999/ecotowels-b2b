@@ -1,9 +1,16 @@
 import React from 'react';
-import { Ruler, Palette, Sparkles, Clock } from 'lucide-react';
+import { Ruler, Palette, Sparkles, Clock, Tag } from 'lucide-react';
+import { calculatePricePerPiece, formatPrice } from '@/lib/pricing';
 
-
-export default function ConfigSummary({ config, logoUrl, variant }) {
+export default function ConfigSummary({ config, logoUrl, variant, quantity }) {
   if (!variant && !config.length && !config.color) return null;
+
+  const pricePerPiece = (variant && config.length && quantity)
+    ? calculatePricePerPiece(variant.name, config.length, quantity)
+    : null;
+
+  const qty = parseInt(String(quantity || '').replace(/[^0-9]/g, '')) || 0;
+  const totalPrice = pricePerPiece && qty > 0 ? pricePerPiece * qty : null;
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
@@ -31,7 +38,6 @@ export default function ConfigSummary({ config, logoUrl, variant }) {
             <span className="text-foreground font-medium">{config.color}</span>
           </div>
         )}
-
         <div className="flex items-center gap-3 text-sm">
           <Clock className="w-4 h-4 text-primary shrink-0" />
           <span className="text-muted-foreground">Lieferzeit:</span>
@@ -46,6 +52,27 @@ export default function ConfigSummary({ config, logoUrl, variant }) {
           </div>
         )}
       </div>
+
+      {/* Price display */}
+      {pricePerPiece && (
+        <div className="border-t border-border pt-3 mt-2">
+          <div className="flex items-center gap-3 text-sm mb-1">
+            <Tag className="w-4 h-4 text-primary shrink-0" />
+            <span className="text-muted-foreground">Richtpreis pro Stück:</span>
+            <span className="text-foreground font-bold text-base text-primary">{formatPrice(pricePerPiece)}</span>
+          </div>
+          {totalPrice && qty >= 50 && (
+            <div className="flex items-center gap-3 text-sm">
+              <div className="w-4 h-4 shrink-0" />
+              <span className="text-muted-foreground">Gesamt ca.:</span>
+              <span className="text-foreground font-semibold">{formatPrice(totalPrice)}</span>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground mt-2 ml-7">
+            * Richtpreis zzgl. MwSt. Das finale Angebot erhalten Sie nach Ihrer Anfrage.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
