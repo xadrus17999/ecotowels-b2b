@@ -1,12 +1,10 @@
-// Base prices per piece by finishing variant
-const basePriceByVariant = {
-  'Bestickt':          { base: 8.90 },
-  'HochTief Webung':   { base: 10.50 },
-  'Bordür Einwebung':  { base: 9.70 },
+const DEFAULT_BASE_PRICES = {
+  'Bestickt':         8.90,
+  'HochTief Webung':  10.50,
+  'Bordür Einwebung': 9.70,
 };
 
-// Size multipliers
-const sizeMultiplier = {
+const DEFAULT_SIZE_MULTIPLIERS = {
   '30x30 cm':   0.70,
   '30x50 cm':   0.80,
   '50x90 cm':   1.00,
@@ -19,8 +17,7 @@ const sizeMultiplier = {
   '100x200 cm': 1.95,
 };
 
-// Quantity discount tiers: minimum quantity → discount factor
-const quantityTiers = [
+const DEFAULT_TIERS = [
   { min: 10000, discount: 0.42 },
   { min: 5000,  discount: 0.46 },
   { min: 2500,  discount: 0.52 },
@@ -31,15 +28,24 @@ const quantityTiers = [
   { min: 50,    discount: 1.00 },
 ];
 
+function getConfig() {
+  try {
+    const stored = localStorage.getItem('admin_pricing_config');
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return { basePrices: DEFAULT_BASE_PRICES, sizeMultipliers: DEFAULT_SIZE_MULTIPLIERS, tiers: DEFAULT_TIERS };
+}
+
 export function calculatePricePerPiece(variantName, size, quantity) {
-  const variantData = basePriceByVariant[variantName];
-  const mult = sizeMultiplier[size];
-  if (!variantData || !mult) return null;
+  const { basePrices, sizeMultipliers, tiers } = getConfig();
+  const base = basePrices[variantName];
+  const mult = sizeMultipliers[size];
+  if (!base || !mult) return null;
 
   const qty = parseInt(String(quantity).replace(/[^0-9]/g, '')) || 0;
-  const tier = quantityTiers.find(t => qty >= t.min) || quantityTiers[quantityTiers.length - 1];
+  const tier = tiers.find(t => qty >= t.min) || tiers[tiers.length - 1];
 
-  const price = variantData.base * mult * tier.discount;
+  const price = base * mult * tier.discount;
   return Math.round(price * 100) / 100;
 }
 
