@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, RefreshCw, ExternalLink } from 'lucide-react';
+import { ArrowLeft, RefreshCw, ExternalLink, Lock, Loader2 } from 'lucide-react';
 
 const STATUS_LABELS = {
   neu: { label: 'Neu', color: 'bg-blue-100 text-blue-800' },
@@ -16,6 +16,49 @@ const STATUS_LABELS = {
 export default function Admin() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all');
+  const [authState, setAuthState] = useState('loading'); // 'loading' | 'unauthorized' | 'authorized'
+
+  useEffect(() => {
+    base44.auth.me()
+      .then(user => {
+        if (user && user.role === 'admin') {
+          setAuthState('authorized');
+        } else {
+          setAuthState('unauthorized');
+        }
+      })
+      .catch(() => setAuthState('unauthorized'));
+  }, []);
+
+  if (authState === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (authState === 'unauthorized') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-secondary/40">
+        <div className="bg-card border border-border rounded-2xl p-10 max-w-sm w-full mx-4 text-center shadow-sm">
+          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+            <Lock className="w-7 h-7 text-primary" />
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-foreground mb-2">Backend-Zugang</h1>
+          <p className="text-muted-foreground text-sm mb-6">
+            Dieser Bereich ist nur für autorisierte Administratoren zugänglich.
+          </p>
+          <Button
+            className="w-full rounded-xl"
+            onClick={() => base44.auth.redirectToLogin(window.location.href)}
+          >
+            Anmelden
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const { data: inquiries = [], isLoading, refetch } = useQuery({
     queryKey: ['inquiries'],
