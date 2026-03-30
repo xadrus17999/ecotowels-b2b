@@ -139,7 +139,7 @@ export default function Admin() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('inquiries');
-  const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem('admin_auth') === '1');
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const { data: inquiries = [], isLoading, refetch } = useQuery({
     queryKey: ['inquiries'],
@@ -158,7 +158,6 @@ export default function Admin() {
   });
 
   const handleLogin = () => {
-    sessionStorage.setItem('admin_auth', '1');
     setLoggedIn(true);
   };
 
