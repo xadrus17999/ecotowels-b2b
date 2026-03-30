@@ -67,24 +67,25 @@ export default function Home() {
 
     setSubmitting(true);
 
-    const inquiryData = {
-      finishing_variant: selectedVariant?.name || '',
-      towel_size: activeConfig.length,
-      towel_color: activeConfig.color,
-      logo_url: logoUrl,
-      quantity: parseInt(contact.quantity.replace(/[^0-9]/g, '')) || 0,
-      company_name: contact.company_name,
-      contact_name: contact.contact_name,
-      contact_email: contact.contact_email,
-      contact_phone: contact.contact_phone,
-      notes: contact.notes,
-      privacy_accepted: contact.privacy_accepted,
-      status: 'neu'
-    };
+    try {
+      const inquiryData = {
+        finishing_variant: selectedVariant?.name || '',
+        towel_size: activeConfig.length,
+        towel_color: activeConfig.color,
+        logo_url: logoUrl,
+        quantity: parseInt(contact.quantity.replace(/[^0-9]/g, '')) || 0,
+        company_name: contact.company_name,
+        contact_name: contact.contact_name,
+        contact_email: contact.contact_email,
+        contact_phone: contact.contact_phone,
+        notes: contact.notes,
+        privacy_accepted: contact.privacy_accepted,
+        status: 'neu'
+      };
 
-    await base44.entities.TowelInquiry.create(inquiryData);
+      await base44.entities.TowelInquiry.create(inquiryData);
 
-    const emailBody = `
+      const emailBody = `
 <h2>Neue Handtuch-Anfrage</h2>
 <hr>
 <h3>Konfiguration</h3>
@@ -101,26 +102,23 @@ ${logoUrl ? `<p><strong>Logo:</strong> <a href="${logoUrl}">Logo ansehen</a></p>
 <p><strong>Stückzahl:</strong> ${contact.quantity}</p>
 ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
 <p><strong>Datenschutz akzeptiert:</strong> ${contact.privacy_accepted ? 'Ja' : 'Nein'}</p>
-    `.trim();
+      `.trim();
 
-    // Email via Resend (best-effort, does not block success screen)
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Absolut Hübbers <onboarding@resend.dev>',
-        to: [PRODUCER_EMAIL],
+      // Email via backend function (uses server-side RESEND_API_KEY)
+      base44.functions.invoke('sendInquiryEmail', {
+        to: PRODUCER_EMAIL,
         subject: `Neue Handtuch-Anfrage von ${contact.company_name}`,
         html: emailBody,
-      }),
-    }).catch(() => {});
+      }).catch(() => {});
 
-    setSubmitting(false);
-    setSubmitted(true);
-    setShowToast(true);
+      setSubmitted(true);
+      setShowToast(true);
+    } catch (error) {
+      toast.error('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.');
+      console.error('Submit error:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
