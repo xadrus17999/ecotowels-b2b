@@ -79,7 +79,7 @@ export default function InfoSection({ detailImage }) {
         </div>
 
         {/* Benefits Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {benefits.map((benefit, i) => (
             <motion.div
               key={benefit.title}
@@ -88,15 +88,23 @@ export default function InfoSection({ detailImage }) {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="text-center"
+              whileHover={{ y: -4, transition: { duration: 0.25, ease: 'easeOut' } }}
+              className="group relative text-center rounded-2xl border border-transparent bg-transparent px-6 py-8 cursor-default
+                transition-all duration-300 ease-out
+                hover:bg-secondary/70 hover:border-border hover:shadow-[0_4px_32px_0_rgba(0,0,0,0.07)]"
             >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
-                <benefit.icon className="w-6 h-6 text-primary" />
+              {/* subtle inner glow on hover */}
+              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                bg-gradient-to-b from-white/40 to-transparent pointer-events-none" />
+
+              <div className="relative w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5
+                transition-all duration-300 group-hover:bg-primary/15 group-hover:shadow-sm">
+                <benefit.icon className="w-6 h-6 text-primary transition-transform duration-300 group-hover:scale-110" />
               </div>
-              <h3 className="font-heading text-lg font-semibold text-foreground mb-2">
+              <h3 className="relative font-heading text-lg font-semibold text-foreground mb-2">
                 {benefit.title}
               </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p className="relative text-muted-foreground text-sm leading-relaxed">
                 {benefit.text}
               </p>
             </motion.div>
