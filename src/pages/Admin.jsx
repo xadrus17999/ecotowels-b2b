@@ -139,6 +139,17 @@ export default function Admin() {
   const [filter, setFilter] = useState('all');
   const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem('admin_auth') === '1');
 
+  const { data: inquiries = [], isLoading, refetch } = useQuery({
+    queryKey: ['inquiries'],
+    queryFn: () => base44.entities.TowelInquiry.list('-created_date', 100),
+    enabled: loggedIn,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, status }) => base44.entities.TowelInquiry.update(id, { status }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inquiries'] }),
+  });
+
   const handleLogin = () => {
     sessionStorage.setItem('admin_auth', '1');
     setLoggedIn(true);
@@ -147,16 +158,6 @@ export default function Admin() {
   if (!loggedIn) {
     return <LoginForm onLogin={handleLogin} />;
   }
-
-  const { data: inquiries = [], isLoading, refetch } = useQuery({
-    queryKey: ['inquiries'],
-    queryFn: () => base44.entities.TowelInquiry.list('-created_date', 100),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, status }) => base44.entities.TowelInquiry.update(id, { status }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inquiries'] }),
-  });
 
   const filtered = filter === 'all' ? inquiries : inquiries.filter(i => i.status === filter);
 
