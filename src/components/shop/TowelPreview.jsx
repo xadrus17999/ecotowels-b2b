@@ -27,6 +27,7 @@ const variantImages = {
   'bestickt':  'https://media.base44.com/images/public/69c93819dabe2e39886b1787/a565f369e_generated_image.png',
   'hochtief':  'https://media.base44.com/images/public/69c93819dabe2e39886b1787/43abd22ae_generated_image.png',
   'borduer':   'https://media.base44.com/images/public/69c93819dabe2e39886b1787/9613171c5_generated_image.png',
+  'bedruckt':  'https://media.base44.com/images/public/69c93819dabe2e39886b1787/db841458d_generated_image.png',
 };
 
 export default function TowelPreview({ variant, color, size }) {
@@ -51,7 +52,7 @@ export default function TowelPreview({ variant, color, size }) {
         <img
           src={imgUrl}
           alt={`Vorschau ${variant.name}`}
-          className="w-full object-cover h-48 sm:h-64 md:h-80"
+          className="w-full object-cover aspect-square"
         />
 
         {/* Color tint overlay */}
