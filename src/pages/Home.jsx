@@ -10,6 +10,7 @@ import PresetSelector from '@/components/shop/PresetSelector';
 import CustomConfigurator from '@/components/shop/CustomConfigurator';
 
 import LogoUploader from '@/components/shop/LogoUploader';
+import StepWrapper from '@/components/shop/StepWrapper';
 import ConfigSummary from '@/components/shop/ConfigSummary';
 import TowelPreview from '@/components/shop/TowelPreview';
 import ContactForm from '@/components/shop/ContactForm';
@@ -169,17 +170,22 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                 </div>
 
                 {/* Step 1: Configuration */}
-                <div className="space-y-8">
-                  <PresetSelector selected={selectedVariant} onSelect={setSelectedVariant} />
+                <div className="space-y-6">
+                  <StepWrapper step={1} total={5} visible={true}>
+                    <PresetSelector selected={selectedVariant} onSelect={setSelectedVariant} />
+                  </StepWrapper>
 
                   <CustomConfigurator
                     config={customConfig}
                     onChange={setCustomConfig}
                     quantity={quantity}
                     onQuantityChange={setQuantity}
+                    selectedVariant={selectedVariant}
                   />
 
-                  <LogoUploader logoUrl={logoUrl} onUpload={setLogoUrl} />
+                  <StepWrapper step={5} total={5} visible={!!(selectedVariant && quantity && customConfig.length && customConfig.color)}>
+                    <LogoUploader logoUrl={logoUrl} onUpload={setLogoUrl} />
+                  </StepWrapper>
 
                   <TowelPreview variant={selectedVariant} color={activeConfig.color} size={activeConfig.length} />
 

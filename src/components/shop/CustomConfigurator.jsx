@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { QUANTITY_OPTIONS, parseQuantity, FULL_COLOR_MIN_QUANTITY } from '@/lib/pricing';
+import StepWrapper from '@/components/shop/StepWrapper';
 
 const sizeCategories = [
   { category: 'Gästehandtuch', options: ['30x50 cm', '30x30 cm'] },
@@ -55,12 +56,9 @@ const colorCategories = [
   },
 ];
 
-function SectionHeader({ icon: Icon, label, step }) {
+function SectionHeader({ icon: Icon, label }) {
   return (
-    <div className="flex items-center gap-3 mb-3">
-      <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0">
-        <span className="text-xs font-bold text-primary-foreground">{step}</span>
-      </div>
+    <div className="flex items-center gap-2 mb-3">
       <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
         <Icon className="w-4 h-4 text-primary" />
       </div>
@@ -69,7 +67,7 @@ function SectionHeader({ icon: Icon, label, step }) {
   );
 }
 
-export default function CustomConfigurator({ config, onChange, quantity, onQuantityChange }) {
+export default function CustomConfigurator({ config, onChange, quantity, onQuantityChange, selectedVariant }) {
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
 
@@ -107,32 +105,34 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   };
 
   return (
-    <div className="space-y-8">
-      {/* 1. Quantity */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <SectionHeader icon={Hash} label="Stückzahl" step={1} />
-        <div className="flex flex-wrap gap-2">
-          {QUANTITY_OPTIONS.map((q) => (
-            <button
-              key={q}
-              onClick={() => handleQuantitySelect(q)}
-              className={cn(
-                "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
-                quantity === q
-                  ? "border-primary bg-primary text-primary-foreground shadow-md"
-                  : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
-              )}
-            >
-              {q} Stk.
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 2. Size — only visible once quantity is chosen */}
-      {hasQuantity && (
+    <div className="space-y-6">
+      {/* 2. Quantity — visible once variant is chosen */}
+      <StepWrapper step={2} total={5} visible={!!selectedVariant}>
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
-          <SectionHeader icon={Ruler} label="Größe" step={2} />
+          <SectionHeader icon={Hash} label="Stückzahl" />
+          <div className="flex flex-wrap gap-2">
+            {QUANTITY_OPTIONS.map((q) => (
+              <button
+                key={q}
+                onClick={() => handleQuantitySelect(q)}
+                className={cn(
+                  "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
+                  quantity === q
+                    ? "border-primary bg-primary text-primary-foreground shadow-md"
+                    : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+                )}
+              >
+                {q} Stk.
+              </button>
+            ))}
+          </div>
+        </div>
+      </StepWrapper>
+
+      {/* 3. Size — visible once quantity is chosen */}
+      <StepWrapper step={3} total={5} visible={hasQuantity}>
+        <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
+          <SectionHeader icon={Ruler} label="Größe" />
           <div className="flex flex-wrap gap-2">
             {sizeCategories.map((cat) =>
               cat.options.map((opt) => (
@@ -154,12 +154,12 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
             )}
           </div>
         </div>
-      )}
+      </StepWrapper>
 
-      {/* 3. Color — only visible once size is chosen */}
-      {hasQuantity && config.length && (
+      {/* 4. Color — visible once size is chosen */}
+      <StepWrapper step={4} total={5} visible={hasQuantity && !!config.length}>
         <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
-          <SectionHeader icon={Palette} label="Farbe" step={3} />
+          <SectionHeader icon={Palette} label="Farbe" />
 
           {!hasFullColors && (
             <p className="text-xs text-muted-foreground mb-4 bg-muted/50 rounded-lg px-3 py-2">
@@ -196,7 +196,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
             )}
           </div>
         </div>
-      )}
+      </StepWrapper>
     </div>
   );
 }
