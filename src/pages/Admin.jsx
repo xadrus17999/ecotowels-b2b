@@ -6,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, RefreshCw, ExternalLink, Lock, Loader2, Eye, EyeOff, Trash2 } from 'lucide-react';
-import ProductEditor from '@/components/admin/ProductEditor';
-import PriceTable from '@/components/admin/PriceTable';
+import ShopConfig from '@/components/admin/ShopConfig';
 
 const STATUS_LABELS = {
   neu: { label: 'Neu', color: 'bg-blue-100 text-blue-800' },
@@ -192,7 +191,7 @@ export default function Admin() {
       {/* Tabs */}
       <div className="border-b border-border bg-card px-6">
         <div className="flex gap-6">
-          {[{ id: 'inquiries', label: 'Anfragen' }, { id: 'products', label: 'Produkte & Preise' }, { id: 'pricetable', label: 'Preistabelle' }].map(tab => (
+          {[{ id: 'inquiries', label: 'Anfragen' }, { id: 'config', label: 'Konfiguration' }].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -209,10 +208,8 @@ export default function Admin() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === 'products' ? (
-          <ProductEditor />
-        ) : activeTab === 'pricetable' ? (
-          <PriceTable />
+        {activeTab === 'config' ? (
+          <ShopConfig />
         ) : (
           <>
             {/* Filter */}
