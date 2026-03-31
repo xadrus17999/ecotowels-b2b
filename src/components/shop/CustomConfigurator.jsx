@@ -55,9 +55,12 @@ const colorCategories = [
   },
 ];
 
-function SectionHeader({ icon: Icon, label }) {
+function SectionHeader({ icon: Icon, label, step }) {
   return (
-    <div className="flex items-center gap-2 mb-3">
+    <div className="flex items-center gap-3 mb-3">
+      <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0">
+        <span className="text-xs font-bold text-primary-foreground">{step}</span>
+      </div>
       <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
         <Icon className="w-4 h-4 text-primary" />
       </div>
@@ -107,7 +110,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     <div className="space-y-8">
       {/* 1. Quantity */}
       <div className="rounded-xl border border-border bg-card p-5">
-        <SectionHeader icon={Hash} label="Stückzahl" />
+        <SectionHeader icon={Hash} label="Stückzahl" step={1} />
         <div className="flex flex-wrap gap-2">
           {QUANTITY_OPTIONS.map((q) => (
             <button
@@ -129,7 +132,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       {/* 2. Size — only visible once quantity is chosen */}
       {hasQuantity && (
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
-          <SectionHeader icon={Ruler} label="Größe" />
+          <SectionHeader icon={Ruler} label="Größe" step={2} />
           <div className="flex flex-wrap gap-2">
             {sizeCategories.map((cat) =>
               cat.options.map((opt) => (
@@ -153,10 +156,10 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         </div>
       )}
 
-      {/* 3. Color — only visible once quantity is chosen */}
-      {hasQuantity && (
+      {/* 3. Color — only visible once size is chosen */}
+      {hasQuantity && config.length && (
         <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
-          <SectionHeader icon={Palette} label="Farbe" />
+          <SectionHeader icon={Palette} label="Farbe" step={3} />
 
           {!hasFullColors && (
             <p className="text-xs text-muted-foreground mb-4 bg-muted/50 rounded-lg px-3 py-2">
