@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, Scissors, Layers, Ribbon } from 'lucide-react';
+import { Check, Scissors, Layers, Ribbon, Printer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const presets = [
@@ -24,6 +24,13 @@ const presets = [
     icon: Ribbon,
     description: 'Ein farbiger Streifen mit eingewebtem Logo oder Muster wird als umlaufende Bordüre in das Handtuch integriert — auffällig und elegant.',
     highlight: 'Auffällig & elegant'
+  },
+  {
+    id: 'bedruckt',
+    name: 'Bedruckt',
+    icon: Printer,
+    description: 'Ihr Logo oder Motiv wird mit hochwertigem Textildruck auf das Handtuch aufgebracht — detailreich, farbenfroh und vielseitig einsetzbar.',
+    highlight: 'Farbenfroh & detailreich'
   }
 ];
 
@@ -33,7 +40,7 @@ export default function PresetSelector({ selected, onSelect }) {
       <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.15em]">
         Veredelungs-Variante wählen
       </p>
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {presets.map((preset, i) => {
           const Icon = preset.icon;
           const isSelected = selected?.id === preset.id;
