@@ -8,7 +8,7 @@ import ShopHeader from '@/components/shop/ShopHeader';
 import InfoSection from '@/components/shop/InfoSection';
 import PresetSelector from '@/components/shop/PresetSelector';
 import CustomConfigurator from '@/components/shop/CustomConfigurator';
-import QuantitySelector from '@/components/shop/QuantitySelector';
+
 import LogoUploader from '@/components/shop/LogoUploader';
 import ConfigSummary from '@/components/shop/ConfigSummary';
 import TowelPreview from '@/components/shop/TowelPreview';
@@ -172,9 +172,12 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                 <div className="space-y-8">
                   <PresetSelector selected={selectedVariant} onSelect={setSelectedVariant} />
 
-                  <CustomConfigurator config={customConfig} onChange={setCustomConfig} />
-
-                  <QuantitySelector value={quantity} onChange={setQuantity} />
+                  <CustomConfigurator
+                    config={customConfig}
+                    onChange={setCustomConfig}
+                    quantity={quantity}
+                    onQuantityChange={setQuantity}
+                  />
 
                   <LogoUploader logoUrl={logoUrl} onUpload={setLogoUrl} />
 

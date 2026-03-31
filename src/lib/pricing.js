@@ -56,3 +56,11 @@ export function formatPrice(price) {
 export const QUANTITY_OPTIONS = [
   '50', '100', '250', '500', '1.000', '2.500', '5.000', '10.000+'
 ];
+
+// Returns minimum quantity needed as a number for a given option string
+export function parseQuantity(q) {
+  return parseInt(String(q).replace(/[^0-9]/g, '')) || 0;
+}
+
+// Colors only available from this quantity upward (full color range)
+export const FULL_COLOR_MIN_QUANTITY = 100;
