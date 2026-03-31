@@ -16,13 +16,18 @@ const DEFAULT_CONFIG = {
     'Bordür Einwebung': [{ from: 50, price: 9.70 }, { from: 100, price: 7.95 }, { from: 250, price: 7.08 }, { from: 500, price: 6.31 }, { from: 1000, price: 5.63 }, { from: 2500, price: 5.04 }, { from: 5000, price: 4.47 }, { from: 10000, price: 4.07 }],
     'Bedruckt':         [{ from: 50, price: 7.50 }, { from: 100, price: 6.15 }, { from: 250, price: 5.48 }, { from: 500, price: 4.88 }, { from: 1000, price: 4.35 }, { from: 2500, price: 3.90 }, { from: 5000, price: 3.45 }, { from: 10000, price: 3.15 }],
   },
-  // Größen: array of strings
+  // Größen: array of { name, minQuantity }
   groessen: [
-    '30x30 cm', '30x50 cm',
-    '50x90 cm', '50x100 cm',
-    '70x130 cm', '70x140 cm',
-    '100x150 cm', '100x160 cm',
-    '90x180 cm', '100x200 cm',
+    { name: '30x30 cm',   minQuantity: 50 },
+    { name: '30x50 cm',   minQuantity: 50 },
+    { name: '50x90 cm',   minQuantity: 50 },
+    { name: '50x100 cm',  minQuantity: 50 },
+    { name: '70x130 cm',  minQuantity: 100 },
+    { name: '70x140 cm',  minQuantity: 100 },
+    { name: '100x150 cm', minQuantity: 250 },
+    { name: '100x160 cm', minQuantity: 250 },
+    { name: '90x180 cm',  minQuantity: 250 },
+    { name: '100x200 cm', minQuantity: 500 },
   ],
   // Farben: array of { name, class }
   farben: [
@@ -152,27 +157,52 @@ function StaffelpreiseSection({ staffelpreise, onChange }) {
 
 // ─── Größen Section ───────────────────────────────────────────────────────────
 function GroessenSection({ groessen, onChange }) {
-  const add = () => onChange([...groessen, '']);
-  const update = (i, val) => onChange(groessen.map((g, idx) => idx === i ? val : g));
+  const add = () => onChange([...groessen, { name: '', minQuantity: 50 }]);
+  const update = (i, field, val) => onChange(groessen.map((g, idx) => idx === i ? { ...g, [field]: val } : g));
   const remove = (i) => onChange(groessen.filter((_, idx) => idx !== i));
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 space-y-4">
       <h3 className="font-heading font-semibold text-foreground text-lg">Verfügbare Größen</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-        {groessen.map((g, i) => (
-          <div key={i} className="flex items-center gap-1">
-            <Input
-              value={g}
-              onChange={e => update(i, e.target.value)}
-              className="h-9 text-sm"
-              placeholder="z.B. 50x100 cm"
-            />
-            <button onClick={() => remove(i)} className="text-muted-foreground hover:text-destructive shrink-0 p-1">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        ))}
+      <p className="text-xs text-muted-foreground">Pro Größe kann eine Mindest-Stückzahl festgelegt werden. Die Größe wird dem Kunden erst ab dieser Menge angezeigt.</p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left">
+              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Größe</th>
+              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Ab Stückzahl</th>
+              <th className="pb-2 w-8"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {groessen.map((g, i) => (
+              <tr key={i}>
+                <td className="py-2 pr-4">
+                  <Input
+                    value={g.name}
+                    onChange={e => update(i, 'name', e.target.value)}
+                    className="h-9 text-sm w-40"
+                    placeholder="z.B. 50x100 cm"
+                  />
+                </td>
+                <td className="py-2 pr-4">
+                  <Input
+                    type="text"
+                    value={g.minQuantity}
+                    onChange={e => update(i, 'minQuantity', e.target.value)}
+                    className="h-9 text-sm w-32"
+                    placeholder="z.B. 50"
+                  />
+                </td>
+                <td className="py-2">
+                  <button onClick={() => remove(i)} className="text-muted-foreground hover:text-destructive shrink-0 p-1">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
       <Button variant="outline" size="sm" onClick={add} className="gap-2">
         <Plus className="w-4 h-4" /> Größe hinzufügen

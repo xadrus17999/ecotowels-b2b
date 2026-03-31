@@ -1,16 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { QUANTITY_OPTIONS, parseQuantity, FULL_COLOR_MIN_QUANTITY } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
 
-const sizeCategories = [
-  { category: 'Gästehandtuch', options: ['30x50 cm', '30x30 cm'] },
-  { category: 'Handtuch',      options: ['50x100 cm', '50x90 cm'] },
-  { category: 'Duschtuch',     options: ['70x140 cm', '70x130 cm'] },
-  { category: 'Strandtuch',    options: ['90x180 cm', '100x200 cm'] },
-  { category: 'Badetuch',      options: ['100x150 cm', '100x160 cm'] },
-];
+import { loadShopConfig } from '@/components/admin/ShopConfig';
+
+const SIZE_CATEGORY_MAP = {
+  '30x30 cm': 'Gästehandtuch', '30x50 cm': 'Gästehandtuch',
+  '50x90 cm': 'Handtuch',      '50x100 cm': 'Handtuch',
+  '70x130 cm': 'Duschtuch',    '70x140 cm': 'Duschtuch',
+  '90x180 cm': 'Strandtuch',   '100x200 cm': 'Strandtuch',
+  '100x150 cm': 'Badetuch',    '100x160 cm': 'Badetuch',
+};
 
 // Lagerfarben = available from 50 pcs
 const stockColors = [
@@ -74,6 +76,22 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const qty = parseQuantity(quantity);
   const hasQuantity = qty >= 50;
   const hasFullColors = qty >= FULL_COLOR_MIN_QUANTITY;
+
+  // Load size config and filter by qty
+  const sizeCategories = useMemo(() => {
+    const shopConfig = loadShopConfig();
+    const groessen = shopConfig.groessen || [];
+    // Group by category
+    const map = {};
+    groessen.forEach(g => {
+      const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
+      if (qty < minQty) return;
+      const cat = SIZE_CATEGORY_MAP[g.name] || 'Sonstige';
+      if (!map[cat]) map[cat] = [];
+      map[cat].push(g.name);
+    });
+    return Object.entries(map).map(([category, options]) => ({ category, options }));
+  }, [qty]);
 
   // Visible color categories based on quantity
   const visibleCategories = hasFullColors
