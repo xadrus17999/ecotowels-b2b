@@ -103,7 +103,7 @@ export default function ContactForm({ contact, onChange, onSubmit, submitting })
           <a href="/datenschutz" target="_blank" className="underline hover:text-foreground transition-colors">
             Datenschutzerklärung
           </a>{' '}
-          gelesen und akzeptiere, dass meine Daten zur Kontaktaufnahme gespeichert werden. Eine Anfrage stellt noch keinen verbindlichen Vertrag dar. <span className="text-destructive">*</span>
+          gelesen und akzeptiere, dass meine Daten zur Kontaktaufnahme gespeichert werden. Eine Anfrage stellt noch keinen verbindlichen Vertrag da. <span className="text-destructive">*</span>
         </label>
       </div>
 
