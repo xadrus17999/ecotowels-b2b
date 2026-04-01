@@ -56,19 +56,21 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     return hasOnRequest ? [...numeric, 'auf_anfrage'] : numeric;
   }, [selectedVariant, shopConfig]);
 
-  // Load size config and filter by qty
+  // Load size config and filter by qty (show all sizes for "auf_anfrage")
   const sizeCategories = useMemo(() => {
     const groessen = shopConfig.groessen || [];
     const map = {};
     groessen.forEach(g => {
-      const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
-      if (qty < minQty) return;
+      if (!isOnRequest) {
+        const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
+        if (qty < minQty) return;
+      }
       const cat = SIZE_CATEGORY_MAP[g.name] || 'Sonstige';
       if (!map[cat]) map[cat] = [];
       map[cat].push(g.name);
     });
     return Object.entries(map).map(([category, options]) => ({ category, options }));
-  }, [qty, shopConfig]);
+  }, [qty, isOnRequest, shopConfig]);
 
   const isOnRequest = quantity === 'auf_anfrage';
 
