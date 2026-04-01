@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadShopConfig } from '@/components/admin/ShopConfig';
+import { loadShopConfig } from '@/components/admin/ShopConfig.jsx';
 
 const STORAGE_KEY = 'admin_shop_config';
 

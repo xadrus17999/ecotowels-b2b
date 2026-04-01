@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, RefreshCw, ExternalLink, Lock, Loader2, Eye, EyeOff, Trash2 } from 'lucide-react';
-import ShopConfig from '@/components/admin/ShopConfig';
+import ShopConfig from '@/components/admin/ShopConfig.jsx';
 
 const STATUS_LABELS = {
   neu: { label: 'Neu', color: 'bg-blue-100 text-blue-800' },
