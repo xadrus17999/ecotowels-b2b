@@ -219,6 +219,20 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
             </button>
           ))}
 
+          {isCustomQtyOnly && minQtyHint && (
+            <button
+              onClick={() => handleQuantitySelect(String(minQtyHint))}
+              className={cn(
+                "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
+                quantity === String(minQtyHint)
+                  ? "border-primary bg-primary text-primary-foreground shadow-md"
+                  : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+              )}
+            >
+              {`${minQtyHint.toLocaleString('de-DE')} Stk.`}
+            </button>
+          )}
+
           {(isCustomQtyOnly || quantityOptions.includes('auf_anfrage')) && (
             <div className="flex items-center gap-2">
               <input
