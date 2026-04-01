@@ -8,9 +8,8 @@ import { useShopConfig } from '@/hooks/useShopConfig';
 // Variants that use a free color picker instead of admin-defined swatches
 const FREE_COLOR_VARIANTS = ['HochTief Webung', 'Bordür Einwebung', 'Bedruckt'];
 
-// Convert hex to a simple Pantone-like label for the inquiry
-function hexToPantoneLabel(hex) {
-  return `Pantone (HEX: ${hex.toUpperCase()})`;
+function hexToColorLabel(hex) {
+  return `Individuelle Farbe (HEX: ${hex.toUpperCase()})`;
 }
 
 const SIZE_CATEGORY_MAP = {
@@ -183,7 +182,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                     onChange={e => {
                       const hex = e.target.value;
                       setPickerHex(hex);
-                      onChange({ ...config, color: hexToPantoneLabel(hex), colorHex: hex });
+                      onChange({ ...config, color: hexToColorLabel(hex), colorHex: hex });
                     }}
                     className="w-16 h-16 rounded-xl border-2 border-border cursor-pointer p-1 bg-transparent"
                     title="Farbe wählen"
@@ -194,17 +193,33 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                     className="w-12 h-12 rounded-full border-2 border-border shadow-sm"
                     style={{ backgroundColor: pickerHex }}
                   />
-                  <p className="text-xs font-mono text-muted-foreground">{pickerHex.toUpperCase()}</p>
                 </div>
-                <div className="flex-1 min-w-[180px]">
-                  <p className="text-xs text-muted-foreground mb-1">Wird übermittelt als:</p>
-                  <div className="bg-muted rounded-lg px-3 py-2 text-sm font-medium text-foreground">
-                    {hexToPantoneLabel(pickerHex)}
+                <div className="flex-1 min-w-[200px] space-y-2">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Oder HEX-Code eingeben:</p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={pickerHex}
+                        maxLength={7}
+                        placeholder="#3b82f6"
+                        onChange={e => {
+                          let val = e.target.value;
+                          if (!val.startsWith('#')) val = '#' + val.replace('#', '');
+                          setPickerHex(val);
+                          if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+                            onChange({ ...config, color: hexToColorLabel(val), colorHex: val });
+                          }
+                        }}
+                        className="flex h-9 w-36 rounded-md border border-input bg-transparent px-3 py-1 text-sm font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      />
+                      <div className="w-8 h-8 rounded-full border border-border" style={{ backgroundColor: /^#[0-9a-fA-F]{6}$/.test(pickerHex) ? pickerHex : '#fff' }} />
+                    </div>
                   </div>
                   <button
-                    onClick={() => onChange({ ...config, color: hexToPantoneLabel(pickerHex), colorHex: pickerHex })}
+                    onClick={() => onChange({ ...config, color: hexToColorLabel(pickerHex), colorHex: pickerHex })}
                     className={cn(
-                      "mt-2 px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all duration-150 w-full",
+                      "px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all duration-150 w-full",
                       config.colorHex === pickerHex
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background text-foreground hover:border-primary/50"

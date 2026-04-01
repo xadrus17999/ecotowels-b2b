@@ -2,14 +2,9 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Send, Loader2 } from 'lucide-react';
-
-const quantities = [
-  '50', '100', '250', '500', '1.000', '2.500', '5.000', '10.000+'
-];
 
 export default function ContactForm({ contact, onChange, onSubmit, submitting }) {
   const accepted = !!contact.privacy_accepted;
@@ -64,20 +59,6 @@ export default function ContactForm({ contact, onChange, onSubmit, submitting })
             className="bg-card"
           />
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Stückzahl *</Label>
-        <Select value={contact.quantity} onValueChange={(v) => onChange({ ...contact, quantity: v })}>
-          <SelectTrigger className="bg-card">
-            <SelectValue placeholder="Stückzahl wählen" />
-          </SelectTrigger>
-          <SelectContent>
-            {quantities.map((q) => (
-              <SelectItem key={q} value={q}>{q} Stück</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="space-y-2">
