@@ -3,6 +3,9 @@ export const STORAGE_KEY = 'admin_shop_config';
 // Variants where size is selected FIRST, then quantity is filtered by size's minQuantity
 export const SIZE_FIRST_VARIANTS = ['Bordür Einwebung', 'HochTief Webung', 'Bedruckt', 'Bestickt'];
 
+// Variants where ONLY the custom quantity input is shown (no preset buttons)
+export const CUSTOM_QTY_ONLY_VARIANTS = ['HochTief Webung'];
+
 // Per-variant, per-size minimum quantities
 export const VARIANT_SIZE_MIN_QTY = {
   'Bordür Einwebung': {
@@ -76,8 +79,9 @@ export const DEFAULT_CONFIG = {
       { from: 'auf_anfrage', price: 'auf_anfrage', color: 'Lila',       colorHex: '#9333ea' },
     ],
     'HochTief Webung': [
-      { from: 50,  price: 10.50 },
-      { from: 100, price: 8.61  },
+      { from: 500,  price: 5.19  },
+      { from: 250,  price: 8.99  },
+      { from: 1000, price: 4.20  },
       { from: 'auf_anfrage', price: 'auf_anfrage' },
     ],
     'Bordür Einwebung': [

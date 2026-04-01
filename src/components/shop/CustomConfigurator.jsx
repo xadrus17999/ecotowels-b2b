@@ -4,7 +4,7 @@ import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
 import { useShopConfig } from '@/hooks/useShopConfig';
-import { SIZE_FIRST_VARIANTS, VARIANT_SIZE_MIN_QTY, VARIANT_SIZES } from '@/lib/shopConfig';
+import { SIZE_FIRST_VARIANTS, VARIANT_SIZE_MIN_QTY, VARIANT_SIZES, CUSTOM_QTY_ONLY_VARIANTS } from '@/lib/shopConfig';
 
 // Variants that use a free color picker instead of admin-defined swatches
 const FREE_COLOR_VARIANTS = ['HochTief Webung', 'Bordür Einwebung', 'Bedruckt'];
@@ -45,6 +45,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
 
   const isFreeColorVariant = selectedVariant && FREE_COLOR_VARIANTS.includes(selectedVariant.name);
   const isSizeFirst = selectedVariant && SIZE_FIRST_VARIANTS.includes(selectedVariant.name);
+  const isCustomQtyOnly = selectedVariant && CUSTOM_QTY_ONLY_VARIANTS.includes(selectedVariant.name);
 
   const qty = parseQuantity(quantity);
   const isOnRequest = quantity === 'auf_anfrage';
@@ -203,7 +204,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
           </p>
         )}
         <div className="flex flex-wrap gap-2 items-center">
-          {quantityOptions.filter(q => q !== 'auf_anfrage').map((q) => (
+          {!isCustomQtyOnly && quantityOptions.filter(q => q !== 'auf_anfrage').map((q) => (
             <button
               key={q}
               onClick={() => handleQuantitySelect(q)}
@@ -218,7 +219,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
             </button>
           ))}
 
-          {quantityOptions.includes('auf_anfrage') && (
+          {(isCustomQtyOnly || quantityOptions.includes('auf_anfrage')) && (
             <div className="flex items-center gap-2">
               <input
                 type="number"
