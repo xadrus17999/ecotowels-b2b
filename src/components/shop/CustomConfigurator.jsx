@@ -30,7 +30,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const shopConfig = useShopConfig();
 
   const qty = parseQuantity(quantity);
-  const hasQuantity = qty >= 50;
+  const hasQuantity = qty > 0;
 
   // Derive available quantity options from the admin config for the selected variant
   const quantityOptions = useMemo(() => {

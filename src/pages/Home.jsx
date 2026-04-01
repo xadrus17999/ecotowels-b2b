@@ -172,7 +172,14 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                 {/* Step 1: Configuration */}
                 <div className="space-y-6">
                   <StepWrapper step={1} total={5} visible={true}>
-                    <PresetSelector selected={selectedVariant} onSelect={setSelectedVariant} />
+                    <PresetSelector
+                      selected={selectedVariant}
+                      onSelect={(v) => {
+                        setSelectedVariant(v);
+                        setQuantity('');
+                        setCustomConfig({ length: '', color: '' });
+                      }}
+                    />
                   </StepWrapper>
 
                   <CustomConfigurator
