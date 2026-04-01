@@ -170,10 +170,10 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const handleCustomQtySubmit = () => {
     const val = parseInt(customQtyInput, 10);
     const minForSize = isSizeFirst && config.length
-      ? (VARIANT_SIZE_MIN_QTY[selectedVariant?.name]?.[config.length] ?? 101)
-      : 101;
-    if (isNaN(val) || val < minForSize) {
-      setCustomQtyError(`Bitte eine Stückzahl ab ${minForSize} eingeben.`);
+      ? (VARIANT_SIZE_MIN_QTY[selectedVariant?.name]?.[config.length] ?? 1)
+      : 1;
+    if (isNaN(val) || val < 1) {
+      setCustomQtyError(`Bitte eine gültige Stückzahl eingeben.`);
       return;
     }
     setCustomQtyError('');
@@ -219,25 +219,29 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
             </button>
           ))}
 
-          {isCustomQtyOnly && minQtyHint && (
-            <button
-              onClick={() => handleQuantitySelect(String(minQtyHint))}
-              className={cn(
-                "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
-                quantity === String(minQtyHint)
-                  ? "border-primary bg-primary text-primary-foreground shadow-md"
-                  : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
-              )}
-            >
-              {`${minQtyHint.toLocaleString('de-DE')} Stk.`}
-            </button>
-          )}
+          {isCustomQtyOnly && config.length && minQtyHint && (() => {
+            const fixedQty = minQtyHint;
+            const fixedQtyStr = String(fixedQty);
+            return (
+              <button
+                onClick={() => handleQuantitySelect(fixedQtyStr)}
+                className={cn(
+                  "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
+                  quantity === fixedQtyStr
+                    ? "border-primary bg-primary text-primary-foreground shadow-md"
+                    : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+                )}
+              >
+                {`${fixedQty.toLocaleString('de-DE')} Stk.`}
+              </button>
+            );
+          })()}
 
           {(isCustomQtyOnly || quantityOptions.includes('auf_anfrage')) && (
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                min={minQtyHint ?? 101}
+                min={1}
                 value={customQtyInput}
                 onChange={e => {
                   setCustomQtyInput(e.target.value);
@@ -247,7 +251,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                 placeholder="Wunschanzahl"
                 className={cn(
                   "flex h-10 w-40 rounded-xl border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background",
-                  quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) >= (minQtyHint ?? 101)
+                  quantity === customQtyInput && customQtyInput !== ''
                     ? "border-primary ring-1 ring-primary"
                     : "border-dashed border-accent"
                 )}
@@ -256,7 +260,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                 onClick={handleCustomQtySubmit}
                 className={cn(
                   "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
-                  quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) >= (minQtyHint ?? 101)
+                  quantity === customQtyInput && customQtyInput !== ''
                     ? "border-primary bg-primary text-primary-foreground shadow-md"
                     : "border-dashed border-accent text-accent hover:border-accent hover:bg-accent/5"
                 )}
