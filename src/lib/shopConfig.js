@@ -71,7 +71,18 @@ export const DEFAULT_CONFIG = {
 export function loadShopConfig() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Ensure every variant has an auf_anfrage entry
+      const variants = ['Bestickt', 'HochTief Webung', 'Bordür Einwebung', 'Bedruckt'];
+      variants.forEach(v => {
+        const rows = parsed.staffelpreise?.[v];
+        if (rows && !rows.some(r => String(r.from) === 'auf_anfrage')) {
+          rows.push({ from: 'auf_anfrage', price: 'auf_anfrage' });
+        }
+      });
+      return parsed;
+    }
   } catch {}
   return DEFAULT_CONFIG;
 }
