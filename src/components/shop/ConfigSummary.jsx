@@ -5,7 +5,8 @@ import { calculatePricePerPiece, formatPrice } from '@/lib/pricing';
 export default function ConfigSummary({ config, logoUrl, variant, quantity }) {
   if (!variant && !config.length && !config.color) return null;
 
-  const pricePerPiece = (variant && config.length && quantity)
+  const isOnRequest = quantity === 'auf_anfrage';
+  const pricePerPiece = (!isOnRequest && variant && config.length && quantity)
     ? calculatePricePerPiece(variant.name, config.length, quantity)
     : null;
 
@@ -52,6 +53,17 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity }) {
           </div>
         )}
       </div>
+
+      {/* Price on request */}
+      {isOnRequest && variant && config.length && (
+        <div className="border-t border-border pt-3 mt-2">
+          <div className="flex items-center gap-3 text-sm">
+            <Tag className="w-4 h-4 text-accent shrink-0" />
+            <span className="text-muted-foreground">Preis:</span>
+            <span className="font-semibold text-accent">Preis auf Anfrage</span>
+          </div>
+        </div>
+      )}
 
       {/* Price display */}
       {pricePerPiece && (

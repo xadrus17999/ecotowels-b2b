@@ -40,19 +40,20 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const isFreeColorVariant = selectedVariant && FREE_COLOR_VARIANTS.includes(selectedVariant.name);
 
   const qty = parseQuantity(quantity);
-  const hasQuantity = qty > 0;
+  const hasQuantity = qty > 0 || quantity === 'auf_anfrage';
 
   // Derive available quantity options from the admin config for the selected variant
   const quantityOptions = useMemo(() => {
     if (!selectedVariant) return [];
     const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
-    const unique = [...new Set(
+    const hasOnRequest = rows.some(r => String(r.from) === 'auf_anfrage');
+    const numeric = [...new Set(
       rows
         .map(r => parseInt(String(r.from).replace(/[^0-9]/g, '')) || 0)
         .filter(n => n > 0)
         .sort((a, b) => a - b)
-    )];
-    return unique.map(n => n >= 1000 ? `${(n / 1000).toFixed(0)}.000` : String(n));
+    )].map(n => n >= 1000 ? `${(n / 1000).toFixed(0)}.000` : String(n));
+    return hasOnRequest ? [...numeric, 'auf_anfrage'] : numeric;
   }, [selectedVariant, shopConfig]);
 
   // Load size config and filter by qty
@@ -69,33 +70,40 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     return Object.entries(map).map(([category, options]) => ({ category, options }));
   }, [qty, shopConfig]);
 
+  const isOnRequest = quantity === 'auf_anfrage';
+
   // Load available colors from admin config for the selected variant, filtered by qty
   const availableColors = useMemo(() => {
-    if (!selectedVariant || !hasQuantity) return [];
+    if (!selectedVariant || (!hasQuantity && !isOnRequest)) return [];
     const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
-    // Filter by minQuantity, collect unique color entries (by name)
     const seen = new Set();
     const colors = [];
     rows.forEach(row => {
+      const isRowOnRequest = String(row.from) === 'auf_anfrage';
+      if (isOnRequest && !isRowOnRequest) return;
+      if (!isOnRequest && isRowOnRequest) return;
       const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;
-      if (qty < minQty) return;
+      if (!isOnRequest && qty < minQty) return;
       if (row.color && !seen.has(row.color)) {
         seen.add(row.color);
         colors.push({ name: row.color, hex: row.colorHex || '#ffffff' });
       }
     });
     return colors;
-  }, [selectedVariant, qty, hasQuantity, shopConfig]);
+  }, [selectedVariant, qty, hasQuantity, isOnRequest, shopConfig]);
 
   const handleQuantitySelect = (q) => {
     onQuantityChange(q);
     // Reset color if it's no longer available at the new qty
-    const newQty = parseQuantity(q);
     if (config.color) {
       const rows = shopConfig.staffelpreise?.[selectedVariant?.name] || [];
+      const newIsOnRequest = q === 'auf_anfrage';
+      const newQty = parseQuantity(q);
       const stillAvailable = rows.some(row => {
+        const rowIsOnRequest = String(row.from) === 'auf_anfrage';
+        if (newIsOnRequest) return rowIsOnRequest && row.color === config.color;
         const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;
-        return row.color === config.color && newQty >= minQty;
+        return !rowIsOnRequest && row.color === config.color && newQty >= minQty;
       });
       if (!stillAvailable) onChange({ ...config, color: '' });
     }
@@ -126,10 +134,12 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                   "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
                   quantity === q
                     ? "border-primary bg-primary text-primary-foreground shadow-md"
-                    : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+                    : q === 'auf_anfrage'
+                      ? "border-dashed border-accent text-accent hover:border-accent hover:bg-accent/5"
+                      : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
                 )}
               >
-                {q} Stk.
+                {q === 'auf_anfrage' ? 'Höhere Stückanzahl auf Anfrage' : `${q} Stk.`}
               </button>
             ))}
           </div>
@@ -137,7 +147,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       </StepWrapper>
 
       {/* 3. Size */}
-      <StepWrapper step={3} total={5} visible={hasQuantity}>
+      <StepWrapper step={3} total={5} visible={hasQuantity || isOnRequest}>
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Ruler} label="Größe" />
           <div className="flex flex-wrap gap-2">
@@ -164,7 +174,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       </StepWrapper>
 
       {/* 4. Color */}
-      <StepWrapper step={4} total={5} visible={hasQuantity && !!config.length}>
+      <StepWrapper step={4} total={5} visible={(hasQuantity || isOnRequest) && !!config.length}>
         <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Palette} label="Farbe" />
 
