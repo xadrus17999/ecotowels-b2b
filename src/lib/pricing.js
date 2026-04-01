@@ -45,6 +45,12 @@ const FIXED_PRICE_TABLES = {
     '180x100 cm': [{ minQty: 250,  price: 14.99 }],
     '30x50 cm':   [{ minQty: 1000, price: 4.20 }],
   },
+  'Bordür Einwebung': {
+    '100x50 cm':  [{ minQty: 500,  price: 5.79 }],
+    '140x70 cm':  [{ minQty: 250,  price: 9.29 }],
+    '180x100 cm': [{ minQty: 250,  price: 16.49 }],
+    '30x50 cm':   [{ minQty: 1000, price: 4.69 }],
+  },
 };
 
 export function calculatePricePerPiece(variantName, size, quantity) {

@@ -4,7 +4,7 @@ export const STORAGE_KEY = 'admin_shop_config';
 export const SIZE_FIRST_VARIANTS = ['Bordür Einwebung', 'HochTief Webung', 'Bedruckt', 'Bestickt'];
 
 // Variants where ONLY the custom quantity input is shown (no preset buttons)
-export const CUSTOM_QTY_ONLY_VARIANTS = ['HochTief Webung'];
+export const CUSTOM_QTY_ONLY_VARIANTS = ['HochTief Webung', 'Bordür Einwebung'];
 
 // Per-variant, per-size minimum quantities
 export const VARIANT_SIZE_MIN_QTY = {
