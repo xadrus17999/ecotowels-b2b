@@ -51,6 +51,11 @@ const FIXED_PRICE_TABLES = {
     '180x100 cm': [{ minQty: 250,  price: 16.49 }],
     '30x50 cm':   [{ minQty: 1000, price: 4.69 }],
   },
+  'Bestickt': {
+    '100x50 cm':  [{ minQty: 100, price: 8.49 }],
+    '140x70 cm':  [{ minQty: 100, price: 11.49 }],
+    '180x100 cm': [{ minQty: 100, price: 16.99 }],
+  },
 };
 
 export function calculatePricePerPiece(variantName, size, quantity) {
