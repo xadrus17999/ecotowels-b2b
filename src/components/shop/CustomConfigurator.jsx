@@ -1,7 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
-import { QUANTITY_OPTIONS, parseQuantity } from '@/lib/pricing';
+import { parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
 import { useShopConfig } from '@/hooks/useShopConfig';
 
@@ -31,6 +31,19 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
 
   const qty = parseQuantity(quantity);
   const hasQuantity = qty >= 50;
+
+  // Derive available quantity options from the admin config for the selected variant
+  const quantityOptions = useMemo(() => {
+    if (!selectedVariant) return [];
+    const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
+    const unique = [...new Set(
+      rows
+        .map(r => parseInt(String(r.from).replace(/[^0-9]/g, '')) || 0)
+        .filter(n => n > 0)
+        .sort((a, b) => a - b)
+    )];
+    return unique.map(n => n >= 1000 ? `${(n / 1000).toFixed(0)}.000` : String(n));
+  }, [selectedVariant, shopConfig]);
 
   // Load size config and filter by qty
   const sizeCategories = useMemo(() => {
@@ -95,7 +108,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Hash} label="Stückzahl" />
           <div className="flex flex-wrap gap-2">
-            {QUANTITY_OPTIONS.map((q) => (
+            {quantityOptions.map((q) => (
               <button
                 key={q}
                 onClick={() => handleQuantitySelect(q)}
