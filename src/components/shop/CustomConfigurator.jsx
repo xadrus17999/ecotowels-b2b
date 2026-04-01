@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { QUANTITY_OPTIONS, parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
-import { loadShopConfig } from '@/components/admin/ShopConfig';
+import { useShopConfig } from '@/hooks/useShopConfig';
 
 const SIZE_CATEGORY_MAP = {
   '30x30 cm': 'Gästehandtuch', '30x50 cm': 'Gästehandtuch',
@@ -27,13 +27,13 @@ function SectionHeader({ icon: Icon, label }) {
 export default function CustomConfigurator({ config, onChange, quantity, onQuantityChange, selectedVariant }) {
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
+  const shopConfig = useShopConfig();
 
   const qty = parseQuantity(quantity);
   const hasQuantity = qty >= 50;
 
   // Load size config and filter by qty
   const sizeCategories = useMemo(() => {
-    const shopConfig = loadShopConfig();
     const groessen = shopConfig.groessen || [];
     const map = {};
     groessen.forEach(g => {
@@ -44,12 +44,11 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       map[cat].push(g.name);
     });
     return Object.entries(map).map(([category, options]) => ({ category, options }));
-  }, [qty]);
+  }, [qty, shopConfig]);
 
   // Load available colors from admin config for the selected variant, filtered by qty
   const availableColors = useMemo(() => {
     if (!selectedVariant || !hasQuantity) return [];
-    const shopConfig = loadShopConfig();
     const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
     // Filter by minQuantity, collect unique color entries (by name)
     const seen = new Set();
@@ -63,14 +62,13 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       }
     });
     return colors;
-  }, [selectedVariant, qty, hasQuantity]);
+  }, [selectedVariant, qty, hasQuantity, shopConfig]);
 
   const handleQuantitySelect = (q) => {
     onQuantityChange(q);
     // Reset color if it's no longer available at the new qty
     const newQty = parseQuantity(q);
     if (config.color) {
-      const shopConfig = loadShopConfig();
       const rows = shopConfig.staffelpreise?.[selectedVariant?.name] || [];
       const stillAvailable = rows.some(row => {
         const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;

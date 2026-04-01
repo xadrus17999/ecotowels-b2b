@@ -68,6 +68,7 @@ export function loadShopConfig() {
 
 function saveShopConfig(cfg) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+  window.dispatchEvent(new Event('shopconfig:saved'));
 }
 
 // ─── Color Cell with picker + hex input + swatch ─────────────────────────────
