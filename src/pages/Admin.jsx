@@ -6,8 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, RefreshCw, ExternalLink, Lock, Loader2, Eye, EyeOff, Trash2 } from 'lucide-react';
-import ShopConfig from '@/components/admin/ShopConfig.jsx';
-
 const STATUS_LABELS = {
   neu: { label: 'Neu', color: 'bg-blue-100 text-blue-800' },
   in_bearbeitung: { label: 'In Bearbeitung', color: 'bg-yellow-100 text-yellow-800' },
@@ -138,7 +136,7 @@ function LoginForm({ onLogin }) {
 export default function Admin() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('all');
-  const [activeTab, setActiveTab] = useState('inquiries');
+
   const [loggedIn, setLoggedIn] = useState(false);
 
   const { data: inquiries = [], isLoading, refetch } = useQuery({
@@ -176,42 +174,16 @@ export default function Admin() {
             <ArrowLeft className="w-5 h-5" />
           </a>
           <h1 className="font-heading text-xl font-bold text-foreground">Admin</h1>
-          {activeTab === 'inquiries' && (
-            <span className="text-sm text-muted-foreground">{inquiries.length} Anfragen</span>
-          )}
+          <span className="text-sm text-muted-foreground">{inquiries.length} Anfragen</span>
         </div>
-        {activeTab === 'inquiries' && (
-          <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
-            <RefreshCw className="w-4 h-4" />
-            Aktualisieren
-          </Button>
-        )}
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-border bg-card px-6">
-        <div className="flex gap-6">
-          {[{ id: 'inquiries', label: 'Anfragen' }, { id: 'config', label: 'Konfiguration' }].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-primary text-foreground'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+          <RefreshCw className="w-4 h-4" />
+          Aktualisieren
+        </Button>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === 'config' ? (
-          <ShopConfig />
-        ) : (
-          <>
+        <>
             {/* Filter */}
             <div className="flex gap-2 mb-6 flex-wrap">
               {['all', 'neu', 'in_bearbeitung', 'angebot_gesendet', 'abgeschlossen'].map(s => (
@@ -310,8 +282,7 @@ export default function Admin() {
                 </table>
               </div>
             )}
-          </>
-        )}
+        </>
       </div>
     </div>
   );
