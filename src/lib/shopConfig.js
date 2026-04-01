@@ -15,9 +15,9 @@ export const VARIANT_SIZE_MIN_QTY = {
     '30x50 cm':   1000,
   },
   'HochTief Webung': {
-    '100x50 cm':  50,
-    '140x70 cm':  50,
-    '180x100 cm': 50,
+    '100x50 cm':  500,
+    '140x70 cm':  250,
+    '180x100 cm': 250,
     '30x50 cm':   1000,
   },
   'Bedruckt': {

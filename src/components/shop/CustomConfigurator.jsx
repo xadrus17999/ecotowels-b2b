@@ -282,7 +282,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         <div className="flex flex-wrap gap-2">
           {sizeCategories.map((cat) =>
             cat.options.map((opt) => {
-              const sizeMin = isSizeFirst && selectedVariant
+              const sizeMin = isSizeFirst && selectedVariant && !isCustomQtyOnly
                 ? VARIANT_SIZE_MIN_QTY[selectedVariant.name]?.[opt]
                 : null;
               return (
