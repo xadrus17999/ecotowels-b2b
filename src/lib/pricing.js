@@ -36,7 +36,27 @@ function getConfig() {
   return { basePrices: DEFAULT_BASE_PRICES, sizeMultipliers: DEFAULT_SIZE_MULTIPLIERS, tiers: DEFAULT_TIERS };
 }
 
+// Fixed price tables for variants with exact per-size pricing
+// Key: variantName -> size -> { minQty, price }[]
+const FIXED_PRICE_TABLES = {
+  'HochTief Webung': {
+    '100x50 cm':  [{ minQty: 500,  price: 5.19 }],
+    '140x70 cm':  [{ minQty: 250,  price: 8.99 }],
+    '180x100 cm': [{ minQty: 250,  price: 14.99 }],
+    '30x50 cm':   [{ minQty: 1000, price: 4.20 }],
+  },
+};
+
 export function calculatePricePerPiece(variantName, size, quantity) {
+  // Check fixed price table first
+  const fixedTable = FIXED_PRICE_TABLES[variantName]?.[size];
+  if (fixedTable) {
+    const qty = parseInt(String(quantity).replace(/[^0-9]/g, '')) || 0;
+    // Find matching tier (exact minQty match expected)
+    const tier = fixedTable.find(t => qty >= t.minQty);
+    return tier ? tier.price : null;
+  }
+
   const { basePrices, sizeMultipliers, tiers } = getConfig();
   const base = basePrices[variantName];
   const mult = sizeMultipliers[size];

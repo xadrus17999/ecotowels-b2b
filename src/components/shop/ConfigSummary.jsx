@@ -13,6 +13,9 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity }) {
   const qty = parseInt(String(quantity || '').replace(/[^0-9]/g, '')) || 0;
   const totalPrice = pricePerPiece && qty > 0 ? pricePerPiece * qty : null;
 
+  // Show "Auf Anfrage" if quantity is set but no fixed price exists (e.g. custom qty for fixed-price variants)
+  const showPriceOnRequest = (isOnRequest || (quantity && qty > 0 && !pricePerPiece)) && variant && config.length;
+
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
       <h4 className="font-heading font-semibold text-foreground text-sm">Ihre Konfiguration</h4>
@@ -55,7 +58,7 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity }) {
       </div>
 
       {/* Price on request */}
-      {isOnRequest && variant && config.length && (
+      {showPriceOnRequest && (
         <div className="border-t border-border pt-3 mt-2">
           <div className="flex items-center gap-3 text-sm">
             <Tag className="w-4 h-4 text-accent shrink-0" />
