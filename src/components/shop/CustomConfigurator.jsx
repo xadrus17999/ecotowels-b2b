@@ -1,9 +1,10 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
 import { useShopConfig } from '@/hooks/useShopConfig';
+import { SIZE_FIRST_VARIANTS, VARIANT_SIZE_MIN_QTY, VARIANT_SIZES } from '@/lib/shopConfig';
 
 // Variants that use a free color picker instead of admin-defined swatches
 const FREE_COLOR_VARIANTS = ['HochTief Webung', 'Bordür Einwebung', 'Bedruckt'];
@@ -34,6 +35,7 @@ function SectionHeader({ icon: Icon, label }) {
 }
 
 export default function CustomConfigurator({ config, onChange, quantity, onQuantityChange, selectedVariant }) {
+  const quantitySectionRef = useRef(null);
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
   const shopConfig = useShopConfig();
@@ -42,56 +44,74 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const [customQtyError, setCustomQtyError] = useState('');
 
   const isFreeColorVariant = selectedVariant && FREE_COLOR_VARIANTS.includes(selectedVariant.name);
+  const isSizeFirst = selectedVariant && SIZE_FIRST_VARIANTS.includes(selectedVariant.name);
 
   const qty = parseQuantity(quantity);
   const isOnRequest = quantity === 'auf_anfrage';
   const hasQuantity = qty > 0 || isOnRequest;
 
-  // Derive available quantity options from the admin config for the selected variant
-  const quantityOptions = useMemo(() => {
-    if (!selectedVariant) return [];
-    const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
-    const hasOnRequest = rows.some(r => String(r.from) === 'auf_anfrage');
-    const numeric = [...new Set(
-      rows
-        .map(r => parseInt(String(r.from).replace(/[^0-9]/g, '')) || 0)
-        .filter(n => n > 0)
-        .sort((a, b) => a - b)
-    )].map(n => n >= 1000 ? `${(n / 1000).toFixed(0)}.000` : String(n));
-    return hasOnRequest ? [...numeric, 'auf_anfrage'] : numeric;
-  }, [selectedVariant, shopConfig]);
-
-  const BEDRUCKT_SIZES = ['100x50 cm', '140x70 cm', '180x100 cm'];
-
-  // Load size config and filter by qty (show all sizes for "auf_anfrage")
+  // ── Available sizes ──────────────────────────────────────────────────────────
   const sizeCategories = useMemo(() => {
+    const variantName = selectedVariant?.name;
+    if (!variantName) return [];
+
+    const restrictedSizes = VARIANT_SIZES[variantName];
     const groessen = shopConfig.groessen || [];
-    const isBedruckt = selectedVariant?.name === 'Bedruckt';
     const map = {};
-    groessen.forEach(g => {
-      if (isBedruckt && !BEDRUCKT_SIZES.includes(g.name)) return;
-      if (!isOnRequest) {
-        const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
-        if (qty < minQty) return;
-      }
-      const cat = SIZE_CATEGORY_MAP[g.name] || 'Sonstige';
-      if (!map[cat]) map[cat] = [];
-      map[cat].push(g.name);
-    });
-    // For Bedruckt: if sizes aren't in shopConfig.groessen, show them directly
-    if (isBedruckt && Object.keys(map).length === 0) {
-      BEDRUCKT_SIZES.forEach(s => {
+
+    if (restrictedSizes) {
+      // Use the fixed list for restricted variants; no qty filter needed here (qty comes after)
+      restrictedSizes.forEach(s => {
+        // For non-size-first variants, still filter by global qty
+        if (!isSizeFirst && !isOnRequest) {
+          const g = groessen.find(x => x.name === s);
+          const minQty = g ? (parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0) : 0;
+          if (qty < minQty) return;
+        }
         const cat = SIZE_CATEGORY_MAP[s] || 'Sonstige';
         if (!map[cat]) map[cat] = [];
         map[cat].push(s);
       });
+    } else {
+      // Standard variants: filter sizes by qty
+      groessen.forEach(g => {
+        if (!isOnRequest) {
+          const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
+          if (qty < minQty) return;
+        }
+        const cat = SIZE_CATEGORY_MAP[g.name] || 'Sonstige';
+        if (!map[cat]) map[cat] = [];
+        map[cat].push(g.name);
+      });
     }
-    return Object.entries(map).map(([category, options]) => ({ category, options }));
-  }, [qty, isOnRequest, shopConfig, selectedVariant]);
 
-  // Load available colors from admin config for the selected variant, filtered by qty
+    return Object.entries(map).map(([category, options]) => ({ category, options }));
+  }, [selectedVariant, qty, isOnRequest, shopConfig, isSizeFirst]);
+
+  // ── Quantity options (may depend on selected size for size-first variants) ───
+  const quantityOptions = useMemo(() => {
+    if (!selectedVariant) return [];
+    const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
+    const hasOnRequest = rows.some(r => String(r.from) === 'auf_anfrage');
+
+    let minQtyForSize = 0;
+    if (isSizeFirst && config.length) {
+      minQtyForSize = VARIANT_SIZE_MIN_QTY[selectedVariant.name]?.[config.length] ?? 0;
+    }
+
+    const numeric = [...new Set(
+      rows
+        .map(r => parseInt(String(r.from).replace(/[^0-9]/g, '')) || 0)
+        .filter(n => n > 0 && n >= minQtyForSize)
+        .sort((a, b) => a - b)
+    )].map(n => n >= 1000 ? `${(n / 1000).toFixed(0)}.000` : String(n));
+
+    return hasOnRequest ? [...numeric, 'auf_anfrage'] : numeric;
+  }, [selectedVariant, shopConfig, isSizeFirst, config.length]);
+
+  // ── Available colors ─────────────────────────────────────────────────────────
   const availableColors = useMemo(() => {
-    if (!selectedVariant || (!hasQuantity && !isOnRequest)) return [];
+    if (!selectedVariant || !hasQuantity) return [];
     const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
     const seen = new Set();
     const colors = [];
@@ -109,10 +129,25 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     return colors;
   }, [selectedVariant, qty, hasQuantity, isOnRequest, shopConfig]);
 
+  // ── Handlers ─────────────────────────────────────────────────────────────────
+  const handleSizeSelect = (opt) => {
+    // Reset quantity when size changes in size-first flow
+    const newConfig = { ...config, length: opt };
+    if (isSizeFirst) {
+      onQuantityChange('');
+      setCustomQtyInput('');
+      setCustomQtyError('');
+      onChange({ ...newConfig, color: '' });
+      setTimeout(() => quantitySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    } else {
+      onChange(newConfig);
+      setTimeout(() => colorSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    }
+  };
+
   const handleQuantitySelect = (q) => {
     onQuantityChange(q);
-    // Reset color if it's no longer available at the new qty
-    if (config.color) {
+    if (config.color && !isFreeColorVariant) {
       const rows = shopConfig.staffelpreise?.[selectedVariant?.name] || [];
       const newIsOnRequest = q === 'auf_anfrage';
       const newQty = parseQuantity(q);
@@ -124,95 +159,114 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       });
       if (!stillAvailable) onChange({ ...config, color: '' });
     }
-    setTimeout(() => {
-      sizeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
+    if (!isSizeFirst) {
+      setTimeout(() => sizeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    } else {
+      setTimeout(() => colorSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    }
   };
 
   const handleCustomQtySubmit = () => {
     const val = parseInt(customQtyInput, 10);
-    if (isNaN(val) || val <= 100) {
-      setCustomQtyError('Bitte eine Stückzahl größer als 100 eingeben.');
+    const minForSize = isSizeFirst && config.length
+      ? (VARIANT_SIZE_MIN_QTY[selectedVariant?.name]?.[config.length] ?? 101)
+      : 101;
+    if (isNaN(val) || val < minForSize) {
+      setCustomQtyError(`Bitte eine Stückzahl ab ${minForSize} eingeben.`);
       return;
     }
     setCustomQtyError('');
     handleQuantitySelect(String(val));
   };
 
-  const handleSizeSelect = (opt) => {
-    onChange({ ...config, length: opt });
-    setTimeout(() => {
-      colorSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
-  };
+  // ── Render helpers ────────────────────────────────────────────────────────────
+  const sizeStep = isSizeFirst ? 2 : 3;
+  const quantityStep = isSizeFirst ? 3 : 2;
+  const colorStep = 4;
 
-  return (
-    <div className="space-y-6">
-      {/* 2. Quantity */}
-      <StepWrapper step={2} total={5} visible={!!selectedVariant}>
-        <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
-          <SectionHeader icon={Hash} label="Stückzahl" />
-          <div className="flex flex-wrap gap-2 items-center">
-            {quantityOptions.filter(q => q !== 'auf_anfrage').map((q) => (
+  const showSizeStep = isSizeFirst ? !!selectedVariant : hasQuantity;
+  const showQuantityStep = isSizeFirst ? !!config.length : !!selectedVariant;
+  const showColorStep = hasQuantity && !!config.length;
+
+  // Minimum qty label for hint in size-first mode
+  const minQtyHint = isSizeFirst && config.length && selectedVariant
+    ? VARIANT_SIZE_MIN_QTY[selectedVariant.name]?.[config.length]
+    : null;
+
+  const quantityBlock = (
+    <StepWrapper step={quantityStep} total={5} visible={showQuantityStep}>
+      <div ref={quantitySectionRef} className="rounded-xl border border-border bg-card p-5">
+        <SectionHeader icon={Hash} label="Stückzahl" />
+        {minQtyHint && (
+          <p className="text-xs text-muted-foreground mb-3">
+            Für diese Größe ab <span className="font-semibold text-foreground">{minQtyHint.toLocaleString('de-DE')} Stk.</span> bestellbar.
+          </p>
+        )}
+        <div className="flex flex-wrap gap-2 items-center">
+          {quantityOptions.filter(q => q !== 'auf_anfrage').map((q) => (
+            <button
+              key={q}
+              onClick={() => handleQuantitySelect(q)}
+              className={cn(
+                "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
+                quantity === q
+                  ? "border-primary bg-primary text-primary-foreground shadow-md"
+                  : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+              )}
+            >
+              {`${q} Stk.`}
+            </button>
+          ))}
+
+          {quantityOptions.includes('auf_anfrage') && (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={minQtyHint ?? 101}
+                value={customQtyInput}
+                onChange={e => {
+                  setCustomQtyInput(e.target.value);
+                  setCustomQtyError('');
+                }}
+                onKeyDown={e => e.key === 'Enter' && handleCustomQtySubmit()}
+                placeholder="Wunschanzahl"
+                className={cn(
+                  "flex h-10 w-40 rounded-xl border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background",
+                  quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) >= (minQtyHint ?? 101)
+                    ? "border-primary ring-1 ring-primary"
+                    : "border-dashed border-accent"
+                )}
+              />
               <button
-                key={q}
-                onClick={() => handleQuantitySelect(q)}
+                onClick={handleCustomQtySubmit}
                 className={cn(
                   "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
-                  quantity === q
+                  quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) >= (minQtyHint ?? 101)
                     ? "border-primary bg-primary text-primary-foreground shadow-md"
-                    : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+                    : "border-dashed border-accent text-accent hover:border-accent hover:bg-accent/5"
                 )}
               >
-                {`${q} Stk.`}
+                ✓
               </button>
-            ))}
-
-            {/* Inline custom quantity input (replaces "auf_anfrage" button) */}
-            {quantityOptions.includes('auf_anfrage') && (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min={101}
-                  value={customQtyInput}
-                  onChange={e => {
-                    setCustomQtyInput(e.target.value);
-                    setCustomQtyError('');
-                  }}
-                  onKeyDown={e => e.key === 'Enter' && handleCustomQtySubmit()}
-                  placeholder="Wunschanzahl"
-                  className={cn(
-                    "flex h-10 w-40 rounded-xl border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background",
-                    quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
-                      ? "border-primary ring-1 ring-primary"
-                      : "border-dashed border-accent"
-                  )}
-                />
-                <button
-                  onClick={handleCustomQtySubmit}
-                  className={cn(
-                    "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
-                    quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
-                      ? "border-primary bg-primary text-primary-foreground shadow-md"
-                      : "border-dashed border-accent text-accent hover:border-accent hover:bg-accent/5"
-                  )}
-                >
-                  ✓
-                </button>
-              </div>
-            )}
-          </div>
-          {customQtyError && <p className="text-xs text-destructive mt-2">{customQtyError}</p>}
+            </div>
+          )}
         </div>
-      </StepWrapper>
+        {customQtyError && <p className="text-xs text-destructive mt-2">{customQtyError}</p>}
+      </div>
+    </StepWrapper>
+  );
 
-      {/* 3. Size */}
-      <StepWrapper step={3} total={5} visible={hasQuantity || isOnRequest}>
-        <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
-          <SectionHeader icon={Ruler} label="Größe" />
-          <div className="flex flex-wrap gap-2">
-            {sizeCategories.map((cat) =>
-              cat.options.map((opt) => (
+  const sizeBlock = (
+    <StepWrapper step={sizeStep} total={5} visible={showSizeStep}>
+      <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
+        <SectionHeader icon={Ruler} label="Größe" />
+        <div className="flex flex-wrap gap-2">
+          {sizeCategories.map((cat) =>
+            cat.options.map((opt) => {
+              const sizeMin = isSizeFirst && selectedVariant
+                ? VARIANT_SIZE_MIN_QTY[selectedVariant.name]?.[opt]
+                : null;
+              return (
                 <button
                   key={opt}
                   onClick={() => handleSizeSelect(opt)}
@@ -226,20 +280,38 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                 >
                   <span className="font-semibold">{opt}</span>
                   <span className="text-[10px] opacity-60">{cat.category}</span>
+                  {sizeMin && (
+                    <span className="text-[9px] opacity-50">ab {sizeMin >= 1000 ? `${sizeMin / 1000}.000` : sizeMin} Stk.</span>
+                  )}
                 </button>
-              ))
-            )}
-          </div>
+              );
+            })
+          )}
         </div>
-      </StepWrapper>
+      </div>
+    </StepWrapper>
+  );
 
-      {/* 4. Color */}
-      <StepWrapper step={4} total={5} visible={(hasQuantity || isOnRequest) && !!config.length}>
+  return (
+    <div className="space-y-6">
+      {isSizeFirst ? (
+        <>
+          {sizeBlock}
+          {quantityBlock}
+        </>
+      ) : (
+        <>
+          {quantityBlock}
+          {sizeBlock}
+        </>
+      )}
+
+      {/* Color */}
+      <StepWrapper step={colorStep} total={5} visible={showColorStep}>
         <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Palette} label="Farbe" />
 
           {isFreeColorVariant ? (
-            /* Free color picker for HochTief, Bordür, Bedruckt */
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Wählen Sie Ihre Wunschfarbe. Wir konvertieren diese in den nächsten passenden Pantone-Ton.

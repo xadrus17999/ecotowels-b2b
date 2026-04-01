@@ -1,5 +1,31 @@
 export const STORAGE_KEY = 'admin_shop_config';
 
+// Variants where size is selected FIRST, then quantity is filtered by size's minQuantity
+export const SIZE_FIRST_VARIANTS = ['Bordür Einwebung', 'HochTief Webung'];
+
+// Per-variant, per-size minimum quantities (overrides groessen.minQuantity for these variants)
+export const VARIANT_SIZE_MIN_QTY = {
+  'Bordür Einwebung': {
+    '100x50 cm':  500,
+    '140x70 cm':  250,
+    '180x100 cm': 250,
+    '30x50 cm':   1000,
+  },
+  'HochTief Webung': {
+    '100x50 cm':  50,
+    '140x70 cm':  50,
+    '180x100 cm': 50,
+    '30x50 cm':   1000,
+  },
+};
+
+// Sizes available per variant (for restricted variants)
+export const VARIANT_SIZES = {
+  'Bordür Einwebung': ['100x50 cm', '140x70 cm', '180x100 cm', '30x50 cm'],
+  'HochTief Webung':  ['100x50 cm', '140x70 cm', '180x100 cm', '30x50 cm'],
+  'Bedruckt':         ['100x50 cm', '140x70 cm', '180x100 cm'],
+};
+
 export const DEFAULT_CONFIG = {
   staffelpreise: {
     'Bestickt': [
