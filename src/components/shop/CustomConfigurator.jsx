@@ -166,7 +166,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                     setCustomQtyError('');
                   }}
                   onKeyDown={e => e.key === 'Enter' && handleCustomQtySubmit()}
-                  placeholder="Eigene Stückzahl"
+                  placeholder="Wunschanzahl"
                   className={cn(
                     "flex h-10 w-40 rounded-xl border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background",
                     quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
