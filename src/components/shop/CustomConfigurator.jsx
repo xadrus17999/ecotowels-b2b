@@ -1,9 +1,8 @@
 import React, { useRef, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
-import { QUANTITY_OPTIONS, parseQuantity, FULL_COLOR_MIN_QUANTITY } from '@/lib/pricing';
+import { QUANTITY_OPTIONS, parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
-
 import { loadShopConfig } from '@/components/admin/ShopConfig';
 
 const SIZE_CATEGORY_MAP = {
@@ -13,50 +12,6 @@ const SIZE_CATEGORY_MAP = {
   '90x180 cm': 'Strandtuch',   '100x200 cm': 'Strandtuch',
   '100x150 cm': 'Badetuch',    '100x160 cm': 'Badetuch',
 };
-
-// Lagerfarben = available from 50 pcs
-const stockColors = [
-  { name: 'Naturweiß',  class: 'bg-amber-50 border border-border' },
-  { name: 'Cremeweiß',  class: 'bg-yellow-50 border border-border' },
-  { name: 'Hellgrau',   class: 'bg-gray-200' },
-  { name: 'Anthrazit',  class: 'bg-gray-700' },
-  { name: 'Schwarz',    class: 'bg-black' },
-];
-
-// All color categories (available from 100 pcs)
-const colorCategories = [
-  {
-    category: 'Neutral (Lagerware)',
-    colors: stockColors,
-  },
-  {
-    category: 'Erdtöne',
-    colors: [
-      { name: 'Sandbeige',  class: 'bg-amber-200' },
-      { name: 'Terrakotta', class: 'bg-orange-600' },
-      { name: 'Karamel',    class: 'bg-amber-600' },
-      { name: 'Bordeaux',   class: 'bg-red-900' },
-      { name: 'Schokolade', class: 'bg-yellow-900' },
-    ],
-  },
-  {
-    category: 'Natur',
-    colors: [
-      { name: 'Salbeigrün', class: 'bg-emerald-300' },
-      { name: 'Waldgrün',   class: 'bg-green-700' },
-      { name: 'Mintgrün',   class: 'bg-teal-200' },
-    ],
-  },
-  {
-    category: 'Klassisch',
-    colors: [
-      { name: 'Dunkelblau', class: 'bg-blue-900' },
-      { name: 'Mittelblau', class: 'bg-blue-600' },
-      { name: 'Hellblau',   class: 'bg-blue-200' },
-      { name: 'Lila',       class: 'bg-purple-600' },
-    ],
-  },
-];
 
 function SectionHeader({ icon: Icon, label }) {
   return (
@@ -75,13 +30,11 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
 
   const qty = parseQuantity(quantity);
   const hasQuantity = qty >= 50;
-  const hasFullColors = qty >= FULL_COLOR_MIN_QUANTITY;
 
   // Load size config and filter by qty
   const sizeCategories = useMemo(() => {
     const shopConfig = loadShopConfig();
     const groessen = shopConfig.groessen || [];
-    // Group by category
     const map = {};
     groessen.forEach(g => {
       const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
@@ -93,22 +46,37 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     return Object.entries(map).map(([category, options]) => ({ category, options }));
   }, [qty]);
 
-  // Visible color categories based on quantity
-  const visibleCategories = hasFullColors
-    ? colorCategories
-    : hasQuantity
-    ? [colorCategories[0]] // only stock colors
-    : [];
+  // Load available colors from admin config for the selected variant, filtered by qty
+  const availableColors = useMemo(() => {
+    if (!selectedVariant || !hasQuantity) return [];
+    const shopConfig = loadShopConfig();
+    const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
+    // Filter by minQuantity, collect unique color entries (by name)
+    const seen = new Set();
+    const colors = [];
+    rows.forEach(row => {
+      const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;
+      if (qty < minQty) return;
+      if (row.color && !seen.has(row.color)) {
+        seen.add(row.color);
+        colors.push({ name: row.color, hex: row.colorHex || '#ffffff' });
+      }
+    });
+    return colors;
+  }, [selectedVariant, qty, hasQuantity]);
 
   const handleQuantitySelect = (q) => {
     onQuantityChange(q);
-    // Reset color if it's no longer available
+    // Reset color if it's no longer available at the new qty
     const newQty = parseQuantity(q);
-    if (newQty < FULL_COLOR_MIN_QUANTITY && config.color) {
-      const isStockColor = stockColors.some(c => c.name === config.color);
-      if (!isStockColor) {
-        onChange({ ...config, color: '' });
-      }
+    if (config.color) {
+      const shopConfig = loadShopConfig();
+      const rows = shopConfig.staffelpreise?.[selectedVariant?.name] || [];
+      const stillAvailable = rows.some(row => {
+        const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;
+        return row.color === config.color && newQty >= minQty;
+      });
+      if (!stillAvailable) onChange({ ...config, color: '' });
     }
     setTimeout(() => {
       sizeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -124,7 +92,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
 
   return (
     <div className="space-y-6">
-      {/* 2. Quantity — visible once variant is chosen */}
+      {/* 2. Quantity */}
       <StepWrapper step={2} total={5} visible={!!selectedVariant}>
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Hash} label="Stückzahl" />
@@ -147,7 +115,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         </div>
       </StepWrapper>
 
-      {/* 3. Size — visible once quantity is chosen */}
+      {/* 3. Size */}
       <StepWrapper step={3} total={5} visible={hasQuantity}>
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Ruler} label="Größe" />
@@ -174,45 +142,37 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         </div>
       </StepWrapper>
 
-      {/* 4. Color — visible once size is chosen */}
+      {/* 4. Color */}
       <StepWrapper step={4} total={5} visible={hasQuantity && !!config.length}>
         <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Palette} label="Farbe" />
 
-          {!hasFullColors && (
-            <p className="text-xs text-muted-foreground mb-4 bg-muted/50 rounded-lg px-3 py-2">
-              Ab <span className="font-semibold text-foreground">100 Stück</span> sind alle Farben verfügbar. Für Ihre Stückzahl sind Lagerfarben wählbar:
-            </p>
+          {availableColors.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Keine Farben für diese Auswahl verfügbar.</p>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {availableColors.map((c) => (
+                <button
+                  key={c.name}
+                  onClick={() => onChange({ ...config, color: c.name })}
+                  title={c.name}
+                  className={cn(
+                    "w-9 h-9 rounded-full border-2 transition-all duration-150",
+                    config.color === c.name
+                      ? "border-primary ring-2 ring-primary ring-offset-2 ring-offset-background scale-110"
+                      : "border-border hover:scale-105"
+                  )}
+                  style={{ backgroundColor: c.hex }}
+                />
+              ))}
+            </div>
           )}
 
-          <div className="space-y-4">
-            {visibleCategories.map((cat) => (
-              <div key={cat.category}>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">{cat.category}</p>
-                <div className="flex flex-wrap gap-3">
-                  {cat.colors.map((c) => (
-                    <button
-                      key={c.name}
-                      onClick={() => onChange({ ...config, color: c.name })}
-                      title={c.name}
-                      className={cn(
-                        "w-9 h-9 rounded-full transition-all duration-150",
-                        c.class,
-                        config.color === c.name
-                          ? "ring-2 ring-primary ring-offset-2 ring-offset-background scale-110"
-                          : "hover:scale-105"
-                      )}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-            {config.color && (
-              <p className="text-sm text-muted-foreground pt-1">
-                Gewählt: <span className="font-medium text-foreground">{config.color}</span>
-              </p>
-            )}
-          </div>
+          {config.color && (
+            <p className="text-sm text-muted-foreground pt-3">
+              Gewählt: <span className="font-medium text-foreground">{config.color}</span>
+            </p>
+          )}
         </div>
       </StepWrapper>
     </div>

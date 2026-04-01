@@ -9,14 +9,41 @@ const STORAGE_KEY = 'admin_shop_config';
 const VARIANTS = ['Bestickt', 'HochTief Webung', 'Bordür Einwebung', 'Bedruckt'];
 
 const DEFAULT_CONFIG = {
-  // Staffelpreise: { variantName: [ { from: number, price: number } ] }
+  // Artikel: { variantName: [ { from, price, size, color, colorHex } ] }
   staffelpreise: {
-    'Bestickt':         [{ from: 50, price: 8.90 }, { from: 100, price: 7.30 }, { from: 250, price: 6.50 }, { from: 500, price: 5.78 }, { from: 1000, price: 5.16 }, { from: 2500, price: 4.63 }, { from: 5000, price: 4.83 }, { from: 10000, price: 3.74 }],
-    'HochTief Webung':  [{ from: 50, price: 10.50 }, { from: 100, price: 8.61 }, { from: 250, price: 7.67 }, { from: 500, price: 6.83 }, { from: 1000, price: 6.09 }, { from: 2500, price: 5.46 }, { from: 5000, price: 4.84 }, { from: 10000, price: 4.41 }],
-    'Bordür Einwebung': [{ from: 50, price: 9.70 }, { from: 100, price: 7.95 }, { from: 250, price: 7.08 }, { from: 500, price: 6.31 }, { from: 1000, price: 5.63 }, { from: 2500, price: 5.04 }, { from: 5000, price: 4.47 }, { from: 10000, price: 4.07 }],
-    'Bedruckt':         [{ from: 50, price: 7.50 }, { from: 100, price: 6.15 }, { from: 250, price: 5.48 }, { from: 500, price: 4.88 }, { from: 1000, price: 4.35 }, { from: 2500, price: 3.90 }, { from: 5000, price: 3.45 }, { from: 10000, price: 3.15 }],
+    'Bestickt':         [
+      { from: 50,    price: 8.90,  size: '',           color: 'Naturweiß',  colorHex: '#fdf8ef' },
+      { from: 50,    price: 8.90,  size: '',           color: 'Cremeweiß',  colorHex: '#fefce8' },
+      { from: 50,    price: 8.90,  size: '',           color: 'Hellgrau',   colorHex: '#e5e7eb' },
+      { from: 50,    price: 8.90,  size: '',           color: 'Anthrazit',  colorHex: '#374151' },
+      { from: 50,    price: 8.90,  size: '',           color: 'Schwarz',    colorHex: '#000000' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Sandbeige',  colorHex: '#fcd34d' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Terrakotta', colorHex: '#ea580c' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Karamel',    colorHex: '#d97706' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Bordeaux',   colorHex: '#7f1d1d' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Schokolade', colorHex: '#78350f' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Salbeigrün', colorHex: '#6ee7b7' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Waldgrün',   colorHex: '#15803d' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Mintgrün',   colorHex: '#99f6e4' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Dunkelblau', colorHex: '#1e3a8a' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Mittelblau', colorHex: '#2563eb' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Hellblau',   colorHex: '#bfdbfe' },
+      { from: 100,   price: 7.30,  size: '',           color: 'Lila',       colorHex: '#9333ea' },
+    ],
+    'HochTief Webung':  [
+      { from: 50, price: 10.50, size: '', color: 'Naturweiß', colorHex: '#fdf8ef' },
+      { from: 100, price: 8.61, size: '', color: 'Sandbeige', colorHex: '#fcd34d' },
+    ],
+    'Bordür Einwebung': [
+      { from: 50, price: 9.70, size: '', color: 'Naturweiß', colorHex: '#fdf8ef' },
+      { from: 100, price: 7.95, size: '', color: 'Sandbeige', colorHex: '#fcd34d' },
+    ],
+    'Bedruckt': [
+      { from: 50, price: 7.50, size: '', color: 'Naturweiß', colorHex: '#fdf8ef' },
+      { from: 100, price: 6.15, size: '', color: 'Sandbeige', colorHex: '#fcd34d' },
+    ],
   },
-  // Größen: array of { name, minQuantity }
+  // Größen bleiben für den Konfigurator (Mindestmenge pro Größe)
   groessen: [
     { name: '30x30 cm',   minQuantity: 50 },
     { name: '30x50 cm',   minQuantity: 50 },
@@ -28,26 +55,6 @@ const DEFAULT_CONFIG = {
     { name: '100x160 cm', minQuantity: 250 },
     { name: '90x180 cm',  minQuantity: 250 },
     { name: '100x200 cm', minQuantity: 500 },
-  ],
-  // Farben: array of { name, class }
-  farben: [
-    { name: 'Naturweiß',  class: 'bg-amber-50 border border-border' },
-    { name: 'Cremeweiß',  class: 'bg-yellow-50 border border-border' },
-    { name: 'Hellgrau',   class: 'bg-gray-200' },
-    { name: 'Anthrazit',  class: 'bg-gray-700' },
-    { name: 'Schwarz',    class: 'bg-black' },
-    { name: 'Sandbeige',  class: 'bg-amber-200' },
-    { name: 'Terrakotta', class: 'bg-orange-600' },
-    { name: 'Karamel',    class: 'bg-amber-600' },
-    { name: 'Bordeaux',   class: 'bg-red-900' },
-    { name: 'Schokolade', class: 'bg-yellow-900' },
-    { name: 'Salbeigrün', class: 'bg-emerald-300' },
-    { name: 'Waldgrün',   class: 'bg-green-700' },
-    { name: 'Mintgrün',   class: 'bg-teal-200' },
-    { name: 'Dunkelblau', class: 'bg-blue-900' },
-    { name: 'Mittelblau', class: 'bg-blue-600' },
-    { name: 'Hellblau',   class: 'bg-blue-200' },
-    { name: 'Lila',       class: 'bg-purple-600' },
   ],
 };
 
@@ -63,6 +70,46 @@ function saveShopConfig(cfg) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
 }
 
+// ─── Color Cell with picker + hex input + swatch ─────────────────────────────
+function ColorCell({ colorName, colorHex, onNameChange, onHexChange }) {
+  return (
+    <div className="flex items-center gap-2">
+      {/* Color picker */}
+      <div className="relative shrink-0">
+        <input
+          type="color"
+          value={colorHex || '#ffffff'}
+          onChange={e => onHexChange(e.target.value)}
+          className="w-9 h-9 rounded-lg border border-border cursor-pointer p-0.5 bg-transparent"
+          title="Farbe wählen"
+        />
+      </div>
+      {/* Hex code field */}
+      <Input
+        type="text"
+        value={colorHex || ''}
+        onChange={e => onHexChange(e.target.value)}
+        className="h-9 text-sm w-24 font-mono text-xs"
+        placeholder="#ffffff"
+        maxLength={7}
+      />
+      {/* Color name */}
+      <Input
+        type="text"
+        value={colorName || ''}
+        onChange={e => onNameChange(e.target.value)}
+        className="h-9 text-sm w-32"
+        placeholder="z.B. Naturweiß"
+      />
+      {/* Swatch preview */}
+      <div
+        className="w-7 h-7 rounded-full border border-border shrink-0"
+        style={{ backgroundColor: colorHex || '#ffffff' }}
+      />
+    </div>
+  );
+}
+
 // ─── Artikel-Konfiguration Section ───────────────────────────────────────────
 function ArtikelSection({ staffelpreise, onChange }) {
   const [activeVariant, setActiveVariant] = useState(VARIANTS[0]);
@@ -74,7 +121,7 @@ function ArtikelSection({ staffelpreise, onChange }) {
   };
 
   const addRow = () => {
-    onChange({ ...staffelpreise, [activeVariant]: [...rows, { from: '', price: '', size: '', color: '' }] });
+    onChange({ ...staffelpreise, [activeVariant]: [...rows, { from: '', price: '', size: '', color: '', colorHex: '#ffffff' }] });
   };
 
   const removeRow = (i) => {
@@ -85,8 +132,8 @@ function ArtikelSection({ staffelpreise, onChange }) {
     <div className="bg-card border border-border rounded-xl p-6 space-y-4">
       <h3 className="font-heading font-semibold text-foreground text-lg">Artikel-Konfiguration</h3>
       <p className="text-xs text-muted-foreground">
-        Jede Zeile definiert einen Artikel mit Mindestmenge, Preis, Größe und Farbe für die gewählte Veredelungs-Art.
-        Felder können leer gelassen werden (gilt dann für alle).
+        Jede Zeile definiert einen Artikel mit Mindestmenge, Preis, Größe und Farbe.
+        Leere Felder gelten für alle Werte dieser Kategorie.
       </p>
 
       {/* Variant tabs */}
@@ -114,7 +161,7 @@ function ArtikelSection({ staffelpreise, onChange }) {
               <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Ab Menge (Stk.)</th>
               <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Preis / Stk. (€)</th>
               <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Größe</th>
-              <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Farbe</th>
+              <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Farbe (Picker · Hex · Name · Vorschau)</th>
               <th className="py-2 w-8"></th>
             </tr>
           </thead>
@@ -152,12 +199,11 @@ function ArtikelSection({ staffelpreise, onChange }) {
                   />
                 </td>
                 <td className="py-2 px-3">
-                  <Input
-                    type="text"
-                    value={row.color || ''}
-                    onChange={e => updateRow(i, 'color', e.target.value)}
-                    className="w-36 h-9 text-sm"
-                    placeholder="z.B. Naturweiß"
+                  <ColorCell
+                    colorName={row.color || ''}
+                    colorHex={row.colorHex || '#ffffff'}
+                    onNameChange={v => updateRow(i, 'color', v)}
+                    onHexChange={v => updateRow(i, 'colorHex', v)}
                   />
                 </td>
                 <td className="py-2 px-3">
@@ -185,110 +231,6 @@ function ArtikelSection({ staffelpreise, onChange }) {
   );
 }
 
-// ─── Größen Section ───────────────────────────────────────────────────────────
-function GroessenSection({ groessen, onChange }) {
-  const add = () => onChange([...groessen, { name: '', minQuantity: 50 }]);
-  const update = (i, field, val) => onChange(groessen.map((g, idx) => idx === i ? { ...g, [field]: val } : g));
-  const remove = (i) => onChange(groessen.filter((_, idx) => idx !== i));
-
-  return (
-    <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-      <h3 className="font-heading font-semibold text-foreground text-lg">Verfügbare Größen</h3>
-      <p className="text-xs text-muted-foreground">Pro Größe kann eine Mindest-Stückzahl festgelegt werden. Die Größe wird dem Kunden erst ab dieser Menge angezeigt.</p>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left">
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Größe</th>
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Ab Stückzahl</th>
-              <th className="pb-2 w-8"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {groessen.map((g, i) => (
-              <tr key={i}>
-                <td className="py-2 pr-4">
-                  <Input
-                    value={g.name}
-                    onChange={e => update(i, 'name', e.target.value)}
-                    className="h-9 text-sm w-40"
-                    placeholder="z.B. 50x100 cm"
-                  />
-                </td>
-                <td className="py-2 pr-4">
-                  <Input
-                    type="text"
-                    value={g.minQuantity}
-                    onChange={e => update(i, 'minQuantity', e.target.value)}
-                    className="h-9 text-sm w-32"
-                    placeholder="z.B. 50"
-                  />
-                </td>
-                <td className="py-2">
-                  <button onClick={() => remove(i)} className="text-muted-foreground hover:text-destructive shrink-0 p-1">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <Button variant="outline" size="sm" onClick={add} className="gap-2">
-        <Plus className="w-4 h-4" /> Größe hinzufügen
-      </Button>
-    </div>
-  );
-}
-
-// ─── Farben Section ───────────────────────────────────────────────────────────
-function FarbenSection({ farben, onChange }) {
-  const add = () => onChange([...farben, { name: '', class: '' }]);
-  const update = (i, field, val) => onChange(farben.map((f, idx) => idx === i ? { ...f, [field]: val } : f));
-  const remove = (i) => onChange(farben.filter((_, idx) => idx !== i));
-
-  return (
-    <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-      <h3 className="font-heading font-semibold text-foreground text-lg">Verfügbare Farben</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left">
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Farbname</th>
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Tailwind-Klasse (für Swatch)</th>
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Vorschau</th>
-              <th className="pb-2 w-8"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {farben.map((f, i) => (
-              <tr key={i}>
-                <td className="py-2 pr-4">
-                  <Input value={f.name} onChange={e => update(i, 'name', e.target.value)} className="h-9 text-sm w-36" placeholder="z.B. Naturweiß" />
-                </td>
-                <td className="py-2 pr-4">
-                  <Input value={f.class} onChange={e => update(i, 'class', e.target.value)} className="h-9 text-sm w-52 font-mono text-xs" placeholder="z.B. bg-amber-50 border border-border" />
-                </td>
-                <td className="py-2 pr-4">
-                  <div className={`w-7 h-7 rounded-full ${f.class}`} />
-                </td>
-                <td className="py-2">
-                  <button onClick={() => remove(i)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <Button variant="outline" size="sm" onClick={add} className="gap-2">
-        <Plus className="w-4 h-4" /> Farbe hinzufügen
-      </Button>
-    </div>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ShopConfig() {
   const [config, setConfig] = useState(loadShopConfig);
@@ -309,14 +251,6 @@ export default function ShopConfig() {
       <ArtikelSection
         staffelpreise={config.staffelpreise}
         onChange={sp => setConfig(c => ({ ...c, staffelpreise: sp }))}
-      />
-      <GroessenSection
-        groessen={config.groessen}
-        onChange={g => setConfig(c => ({ ...c, groessen: g }))}
-      />
-      <FarbenSection
-        farben={config.farben}
-        onChange={f => setConfig(c => ({ ...c, farben: f }))}
       />
 
       <div className="flex gap-3 pt-2">
