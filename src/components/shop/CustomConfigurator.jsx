@@ -138,8 +138,8 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       <StepWrapper step={2} total={5} visible={!!selectedVariant}>
         <div ref={sizeSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Hash} label="Stückzahl" />
-          <div className="flex flex-wrap gap-2">
-            {quantityOptions.map((q) => (
+          <div className="flex flex-wrap gap-2 items-center">
+            {quantityOptions.filter(q => q !== 'auf_anfrage').map((q) => (
               <button
                 key={q}
                 onClick={() => handleQuantitySelect(q)}
@@ -147,46 +147,48 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                   "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
                   quantity === q
                     ? "border-primary bg-primary text-primary-foreground shadow-md"
-                    : q === 'auf_anfrage'
-                      ? "border-dashed border-accent text-accent hover:border-accent hover:bg-accent/5"
-                      : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
-                )}
-              >
-                {q === 'auf_anfrage' ? 'Höhere Stückanzahl auf Anfrage' : `${q} Stk.`}
-              </button>
-            ))}
-          </div>
-
-          {/* Custom quantity input */}
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground mb-2">Andere Stückzahl eingeben (mind. 101 Stk.):</p>
-            <div className="flex items-center gap-2 flex-wrap">
-              <input
-                type="number"
-                min={101}
-                value={customQtyInput}
-                onChange={e => {
-                  setCustomQtyInput(e.target.value);
-                  setCustomQtyError('');
-                }}
-                onKeyDown={e => e.key === 'Enter' && handleCustomQtySubmit()}
-                placeholder="z. B. 250"
-                className="flex h-9 w-36 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-              <button
-                onClick={handleCustomQtySubmit}
-                className={cn(
-                  "px-4 py-2 rounded-xl text-sm border font-medium transition-all duration-150",
-                  quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
-                    ? "border-primary bg-primary text-primary-foreground shadow-md"
                     : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
                 )}
               >
-                Übernehmen
+                {`${q} Stk.`}
               </button>
-            </div>
-            {customQtyError && <p className="text-xs text-destructive mt-1">{customQtyError}</p>}
+            ))}
+
+            {/* Inline custom quantity input (replaces "auf_anfrage" button) */}
+            {quantityOptions.includes('auf_anfrage') && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={101}
+                  value={customQtyInput}
+                  onChange={e => {
+                    setCustomQtyInput(e.target.value);
+                    setCustomQtyError('');
+                  }}
+                  onKeyDown={e => e.key === 'Enter' && handleCustomQtySubmit()}
+                  placeholder="Eigene Stückzahl"
+                  className={cn(
+                    "flex h-10 w-40 rounded-xl border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background",
+                    quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
+                      ? "border-primary ring-1 ring-primary"
+                      : "border-dashed border-accent"
+                  )}
+                />
+                <button
+                  onClick={handleCustomQtySubmit}
+                  className={cn(
+                    "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
+                    quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
+                      ? "border-primary bg-primary text-primary-foreground shadow-md"
+                      : "border-dashed border-accent text-accent hover:border-accent hover:bg-accent/5"
+                  )}
+                >
+                  ✓
+                </button>
+              </div>
+            )}
           </div>
+          {customQtyError && <p className="text-xs text-destructive mt-2">{customQtyError}</p>}
         </div>
       </StepWrapper>
 
