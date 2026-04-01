@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
@@ -36,6 +36,8 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const colorSectionRef = useRef(null);
   const shopConfig = useShopConfig();
   const [pickerHex, setPickerHex] = useState('#3b82f6');
+  const [customQtyInput, setCustomQtyInput] = useState('');
+  const [customQtyError, setCustomQtyError] = useState('');
 
   const isFreeColorVariant = selectedVariant && FREE_COLOR_VARIANTS.includes(selectedVariant.name);
 
@@ -113,6 +115,16 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     }, 150);
   };
 
+  const handleCustomQtySubmit = () => {
+    const val = parseInt(customQtyInput, 10);
+    if (isNaN(val) || val <= 100) {
+      setCustomQtyError('Bitte eine Stückzahl größer als 100 eingeben.');
+      return;
+    }
+    setCustomQtyError('');
+    handleQuantitySelect(String(val));
+  };
+
   const handleSizeSelect = (opt) => {
     onChange({ ...config, length: opt });
     setTimeout(() => {
@@ -143,6 +155,37 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
                 {q === 'auf_anfrage' ? 'Höhere Stückanzahl auf Anfrage' : `${q} Stk.`}
               </button>
             ))}
+          </div>
+
+          {/* Custom quantity input */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground mb-2">Andere Stückzahl eingeben (mind. 101 Stk.):</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <input
+                type="number"
+                min={101}
+                value={customQtyInput}
+                onChange={e => {
+                  setCustomQtyInput(e.target.value);
+                  setCustomQtyError('');
+                }}
+                onKeyDown={e => e.key === 'Enter' && handleCustomQtySubmit()}
+                placeholder="z. B. 250"
+                className="flex h-9 w-36 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              />
+              <button
+                onClick={handleCustomQtySubmit}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-sm border font-medium transition-all duration-150",
+                  quantity === customQtyInput && customQtyInput !== '' && parseInt(customQtyInput) > 100
+                    ? "border-primary bg-primary text-primary-foreground shadow-md"
+                    : "border-border bg-background text-foreground hover:border-primary/50 hover:shadow-sm"
+                )}
+              >
+                Übernehmen
+              </button>
+            </div>
+            {customQtyError && <p className="text-xs text-destructive mt-1">{customQtyError}</p>}
           </div>
         </div>
       </StepWrapper>
