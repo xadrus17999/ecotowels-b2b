@@ -1,9 +1,17 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
 import { useShopConfig } from '@/hooks/useShopConfig';
+
+// Variants that use a free color picker instead of admin-defined swatches
+const FREE_COLOR_VARIANTS = ['HochTief Webung', 'Bordür Einwebung', 'Bedruckt'];
+
+// Convert hex to a simple Pantone-like label for the inquiry
+function hexToPantoneLabel(hex) {
+  return `Pantone (HEX: ${hex.toUpperCase()})`;
+}
 
 const SIZE_CATEGORY_MAP = {
   '30x30 cm': 'Gästehandtuch', '30x50 cm': 'Gästehandtuch',
@@ -28,6 +36,9 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
   const shopConfig = useShopConfig();
+  const [pickerHex, setPickerHex] = useState('#3b82f6');
+
+  const isFreeColorVariant = selectedVariant && FREE_COLOR_VARIANTS.includes(selectedVariant.name);
 
   const qty = parseQuantity(quantity);
   const hasQuantity = qty > 0;
@@ -158,7 +169,53 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         <div ref={colorSectionRef} className="rounded-xl border border-border bg-card p-5">
           <SectionHeader icon={Palette} label="Farbe" />
 
-          {availableColors.length === 0 ? (
+          {isFreeColorVariant ? (
+            /* Free color picker for HochTief, Bordür, Bedruckt */
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Wählen Sie Ihre Wunschfarbe. Wir konvertieren diese in den nächsten passenden Pantone-Ton.
+              </p>
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="relative">
+                  <input
+                    type="color"
+                    value={pickerHex}
+                    onChange={e => {
+                      const hex = e.target.value;
+                      setPickerHex(hex);
+                      onChange({ ...config, color: hexToPantoneLabel(hex), colorHex: hex });
+                    }}
+                    className="w-16 h-16 rounded-xl border-2 border-border cursor-pointer p-1 bg-transparent"
+                    title="Farbe wählen"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <div
+                    className="w-12 h-12 rounded-full border-2 border-border shadow-sm"
+                    style={{ backgroundColor: pickerHex }}
+                  />
+                  <p className="text-xs font-mono text-muted-foreground">{pickerHex.toUpperCase()}</p>
+                </div>
+                <div className="flex-1 min-w-[180px]">
+                  <p className="text-xs text-muted-foreground mb-1">Wird übermittelt als:</p>
+                  <div className="bg-muted rounded-lg px-3 py-2 text-sm font-medium text-foreground">
+                    {hexToPantoneLabel(pickerHex)}
+                  </div>
+                  <button
+                    onClick={() => onChange({ ...config, color: hexToPantoneLabel(pickerHex), colorHex: pickerHex })}
+                    className={cn(
+                      "mt-2 px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all duration-150 w-full",
+                      config.colorHex === pickerHex
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-foreground hover:border-primary/50"
+                    )}
+                  >
+                    {config.colorHex === pickerHex ? '✓ Farbe gewählt' : 'Diese Farbe verwenden'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : availableColors.length === 0 ? (
             <p className="text-sm text-muted-foreground">Keine Farben für diese Auswahl verfügbar.</p>
           ) : (
             <div className="flex flex-wrap gap-3">

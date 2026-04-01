@@ -177,7 +177,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                       onSelect={(v) => {
                         setSelectedVariant(v);
                         setQuantity('');
-                        setCustomConfig({ length: '', color: '' });
+                        setCustomConfig({ length: '', color: '', colorHex: '' });
                       }}
                     />
                   </StepWrapper>
