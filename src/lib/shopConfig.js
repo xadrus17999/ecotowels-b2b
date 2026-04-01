@@ -65,6 +65,9 @@ export const DEFAULT_CONFIG = {
     { name: '100x160 cm', minQuantity: 250 },
     { name: '90x180 cm',  minQuantity: 250 },
     { name: '100x200 cm', minQuantity: 500 },
+    { name: '100x50 cm',  minQuantity: 50  },
+    { name: '140x70 cm',  minQuantity: 50  },
+    { name: '180x100 cm', minQuantity: 50  },
   ],
 };
 

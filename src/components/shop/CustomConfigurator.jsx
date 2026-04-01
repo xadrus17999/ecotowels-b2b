@@ -18,6 +18,8 @@ const SIZE_CATEGORY_MAP = {
   '70x130 cm': 'Duschtuch',    '70x140 cm': 'Duschtuch',
   '90x180 cm': 'Strandtuch',   '100x200 cm': 'Strandtuch',
   '100x150 cm': 'Badetuch',    '100x160 cm': 'Badetuch',
+  '100x50 cm': 'Handtuch',     '140x70 cm': 'Duschtuch',
+  '180x100 cm': 'Strandtuch',
 };
 
 function SectionHeader({ icon: Icon, label }) {
@@ -59,11 +61,15 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     return hasOnRequest ? [...numeric, 'auf_anfrage'] : numeric;
   }, [selectedVariant, shopConfig]);
 
+  const BEDRUCKT_SIZES = ['100x50 cm', '140x70 cm', '180x100 cm'];
+
   // Load size config and filter by qty (show all sizes for "auf_anfrage")
   const sizeCategories = useMemo(() => {
     const groessen = shopConfig.groessen || [];
+    const isBedruckt = selectedVariant?.name === 'Bedruckt';
     const map = {};
     groessen.forEach(g => {
+      if (isBedruckt && !BEDRUCKT_SIZES.includes(g.name)) return;
       if (!isOnRequest) {
         const minQty = parseInt(String(g.minQuantity).replace(/[^0-9]/g, '')) || 0;
         if (qty < minQty) return;
@@ -72,8 +78,16 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       if (!map[cat]) map[cat] = [];
       map[cat].push(g.name);
     });
+    // For Bedruckt: if sizes aren't in shopConfig.groessen, show them directly
+    if (isBedruckt && Object.keys(map).length === 0) {
+      BEDRUCKT_SIZES.forEach(s => {
+        const cat = SIZE_CATEGORY_MAP[s] || 'Sonstige';
+        if (!map[cat]) map[cat] = [];
+        map[cat].push(s);
+      });
+    }
     return Object.entries(map).map(([category, options]) => ({ category, options }));
-  }, [qty, isOnRequest, shopConfig]);
+  }, [qty, isOnRequest, shopConfig, selectedVariant]);
 
   // Load available colors from admin config for the selected variant, filtered by qty
   const availableColors = useMemo(() => {
