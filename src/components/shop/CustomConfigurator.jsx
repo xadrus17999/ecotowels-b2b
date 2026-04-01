@@ -40,7 +40,8 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const isFreeColorVariant = selectedVariant && FREE_COLOR_VARIANTS.includes(selectedVariant.name);
 
   const qty = parseQuantity(quantity);
-  const hasQuantity = qty > 0 || quantity === 'auf_anfrage';
+  const isOnRequest = quantity === 'auf_anfrage';
+  const hasQuantity = qty > 0 || isOnRequest;
 
   // Derive available quantity options from the admin config for the selected variant
   const quantityOptions = useMemo(() => {
@@ -71,8 +72,6 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     });
     return Object.entries(map).map(([category, options]) => ({ category, options }));
   }, [qty, isOnRequest, shopConfig]);
-
-  const isOnRequest = quantity === 'auf_anfrage';
 
   // Load available colors from admin config for the selected variant, filtered by qty
   const availableColors = useMemo(() => {
