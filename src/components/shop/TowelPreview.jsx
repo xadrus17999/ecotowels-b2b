@@ -52,7 +52,8 @@ export default function TowelPreview({ variant, color, size }) {
         <img
           src={imgUrl}
           alt={`Vorschau ${variant.name}`}
-          className="w-full object-cover aspect-video"
+          className="w-full object-cover"
+          style={{ maxHeight: '220px' }}
         />
 
         {/* Color tint overlay */}
