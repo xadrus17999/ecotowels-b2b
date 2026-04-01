@@ -63,28 +63,31 @@ function saveShopConfig(cfg) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
 }
 
-// ─── Staffelpreise Section ────────────────────────────────────────────────────
-function StaffelpreiseSection({ staffelpreise, onChange }) {
+// ─── Artikel-Konfiguration Section ───────────────────────────────────────────
+function ArtikelSection({ staffelpreise, onChange }) {
   const [activeVariant, setActiveVariant] = useState(VARIANTS[0]);
-  const tiers = staffelpreise[activeVariant] || [];
+  const rows = staffelpreise[activeVariant] || [];
 
-  const updateTier = (i, field, value) => {
-    const updated = tiers.map((t, idx) => idx === i ? { ...t, [field]: value } : t);
+  const updateRow = (i, field, value) => {
+    const updated = rows.map((r, idx) => idx === i ? { ...r, [field]: value } : r);
     onChange({ ...staffelpreise, [activeVariant]: updated });
   };
 
-  const addTier = () => {
-    onChange({ ...staffelpreise, [activeVariant]: [...tiers, { from: '', price: '' }] });
+  const addRow = () => {
+    onChange({ ...staffelpreise, [activeVariant]: [...rows, { from: '', price: '', size: '', color: '' }] });
   };
 
-  const removeTier = (i) => {
-    onChange({ ...staffelpreise, [activeVariant]: tiers.filter((_, idx) => idx !== i) });
+  const removeRow = (i) => {
+    onChange({ ...staffelpreise, [activeVariant]: rows.filter((_, idx) => idx !== i) });
   };
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-      <h3 className="font-heading font-semibold text-foreground text-lg">Staffelpreise (€ pro Stück)</h3>
-      <p className="text-xs text-muted-foreground">Preis pro Stück ab der angegebenen Menge. Gilt für alle Größen und Farben dieser Veredelungs-Art.</p>
+      <h3 className="font-heading font-semibold text-foreground text-lg">Artikel-Konfiguration</h3>
+      <p className="text-xs text-muted-foreground">
+        Jede Zeile definiert einen Artikel mit Mindestmenge, Preis, Größe und Farbe für die gewählte Veredelungs-Art.
+        Felder können leer gelassen werden (gilt dann für alle).
+      </p>
 
       {/* Variant tabs */}
       <div className="flex flex-wrap gap-2">
@@ -103,53 +106,80 @@ function StaffelpreiseSection({ staffelpreise, onChange }) {
         ))}
       </div>
 
-      {/* Tiers table */}
+      {/* Rows table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left">
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Ab Menge (Stk.)</th>
-              <th className="pb-2 text-xs text-muted-foreground uppercase tracking-wide font-semibold pr-4">Preis / Stk. (€)</th>
-              <th className="pb-2 w-8"></th>
+            <tr className="text-left bg-muted/40">
+              <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Ab Menge (Stk.)</th>
+              <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Preis / Stk. (€)</th>
+              <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Größe</th>
+              <th className="py-2 px-3 text-xs text-muted-foreground uppercase tracking-wide font-semibold">Farbe</th>
+              <th className="py-2 w-8"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {tiers.map((tier, i) => (
-              <tr key={i}>
-                <td className="py-2 pr-4">
+            {rows.map((row, i) => (
+              <tr key={i} className="hover:bg-muted/20">
+                <td className="py-2 px-3">
                   <Input
                     type="text"
-                    value={tier.from}
-                    onChange={e => updateTier(i, 'from', e.target.value)}
-                    className="w-36 h-9 text-sm"
+                    value={row.from}
+                    onChange={e => updateRow(i, 'from', e.target.value)}
+                    className="w-28 h-9 text-sm"
                     placeholder="z.B. 50"
                   />
                 </td>
-                <td className="py-2 pr-4">
-                  <div className="relative w-36">
+                <td className="py-2 px-3">
+                  <div className="relative w-32">
                     <Input
                       type="text"
-                      value={tier.price}
-                      onChange={e => updateTier(i, 'price', e.target.value)}
+                      value={row.price}
+                      onChange={e => updateRow(i, 'price', e.target.value)}
                       className="h-9 text-sm pr-6"
                       placeholder="z.B. 8.90"
                     />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">€</span>
                   </div>
                 </td>
-                <td className="py-2">
-                  <button onClick={() => removeTier(i)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
+                <td className="py-2 px-3">
+                  <Input
+                    type="text"
+                    value={row.size || ''}
+                    onChange={e => updateRow(i, 'size', e.target.value)}
+                    className="w-36 h-9 text-sm"
+                    placeholder="z.B. 50x100 cm"
+                  />
+                </td>
+                <td className="py-2 px-3">
+                  <Input
+                    type="text"
+                    value={row.color || ''}
+                    onChange={e => updateRow(i, 'color', e.target.value)}
+                    className="w-36 h-9 text-sm"
+                    placeholder="z.B. Naturweiß"
+                  />
+                </td>
+                <td className="py-2 px-3">
+                  <button onClick={() => removeRow(i)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </td>
               </tr>
             ))}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-6 text-center text-muted-foreground text-sm">
+                  Noch keine Artikel. Klicke auf „Artikel hinzufügen".
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      <Button variant="outline" size="sm" onClick={addTier} className="gap-2">
-        <Plus className="w-4 h-4" /> Staffel hinzufügen
+      <Button variant="outline" size="sm" onClick={addRow} className="gap-2">
+        <Plus className="w-4 h-4" /> Artikel hinzufügen
       </Button>
     </div>
   );
@@ -276,7 +306,7 @@ export default function ShopConfig() {
 
   return (
     <div className="space-y-6">
-      <StaffelpreiseSection
+      <ArtikelSection
         staffelpreise={config.staffelpreise}
         onChange={sp => setConfig(c => ({ ...c, staffelpreise: sp }))}
       />
