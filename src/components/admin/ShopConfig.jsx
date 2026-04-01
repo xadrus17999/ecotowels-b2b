@@ -289,12 +289,11 @@ function GroessenSection({ groessen, onChange }) {
                 </td>
                 <td className="py-2 px-3">
                   <Input
-                    type="number"
+                    type="text"
                     value={g.minQuantity}
-                    onChange={e => updateRow(i, 'minQuantity', parseInt(e.target.value) || 0)}
+                    onChange={e => updateRow(i, 'minQuantity', e.target.value)}
                     className="w-28 h-9 text-sm"
                     placeholder="50"
-                    min={1}
                   />
                 </td>
                 <td className="py-2 px-3">
