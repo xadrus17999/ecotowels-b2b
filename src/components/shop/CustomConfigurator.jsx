@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import ErrorToast from '@/components/shop/ErrorToast';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
 import StepWrapper from '@/components/shop/StepWrapper';
@@ -40,7 +40,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
   const shopConfig = useShopConfig();
-  const { toast } = useToast();
+  const [errorToast, setErrorToast] = useState({ visible: false, message: '' });
   const [pickerHex, setPickerHex] = useState('#3b82f6');
   const [customQtyInput, setCustomQtyInput] = useState('');
   const [customQtyError, setCustomQtyError] = useState('');
@@ -180,7 +180,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       return;
     }
     if (val <= minForSize) {
-      toast({ variant: 'destructive', title: 'Ungültige Stückzahl', description: `Die Wunschanzahl muss mehr als ${minForSize} Stück betragen.` });
+      setErrorToast({ visible: true, message: `Die Wunschanzahl muss mehr als ${minForSize} Stück betragen.` });
       return;
     }
     setCustomQtyError('');
@@ -319,6 +319,12 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   );
 
   return (
+    <>
+    <ErrorToast
+      visible={errorToast.visible}
+      message={errorToast.message}
+      onClose={() => setErrorToast({ visible: false, message: '' })}
+    />
     <div className="space-y-6">
       {isSizeFirst ? (
         <>
@@ -427,5 +433,6 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
         </div>
       </StepWrapper>
     </div>
+    </>
   );
 }
