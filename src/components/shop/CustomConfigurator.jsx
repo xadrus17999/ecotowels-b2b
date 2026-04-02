@@ -1,4 +1,5 @@
 import React, { useRef, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
@@ -34,7 +35,7 @@ function SectionHeader({ icon: Icon, label }) {
   );
 }
 
-export default function CustomConfigurator({ config, onChange, quantity, onQuantityChange, selectedVariant }) {
+export default function CustomConfigurator({ config, onChange, quantity, onQuantityChange, selectedVariant, onIsCustomQty }) {
   const quantitySectionRef = useRef(null);
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
@@ -146,8 +147,9 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     }
   };
 
-  const handleQuantitySelect = (q) => {
+  const handleQuantitySelect = (q, isCustom = false) => {
     onQuantityChange(q);
+    onIsCustomQty?.(isCustom);
     if (config.color && !isFreeColorVariant) {
       const rows = shopConfig.staffelpreise?.[selectedVariant?.name] || [];
       const newIsOnRequest = q === 'auf_anfrage';
@@ -173,11 +175,15 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       ? (VARIANT_SIZE_MIN_QTY[selectedVariant?.name]?.[config.length] ?? 1)
       : 1;
     if (isNaN(val) || val < 1) {
-      setCustomQtyError(`Bitte eine gültige Stückzahl eingeben.`);
+      setCustomQtyError('Bitte eine gültige Stückzahl eingeben.');
+      return;
+    }
+    if (val <= minForSize) {
+      toast.error(`Die Wunschanzahl muss mindestens ${minForSize + 1} Stück betragen (1 mehr als die Mindestmenge von ${minForSize}).`);
       return;
     }
     setCustomQtyError('');
-    handleQuantitySelect(String(val));
+    handleQuantitySelect(String(val), true);
   };
 
   // ── Render helpers ────────────────────────────────────────────────────────────
@@ -207,7 +213,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
           {!isCustomQtyOnly && quantityOptions.filter(q => q !== 'auf_anfrage').map((q) => (
             <button
               key={q}
-              onClick={() => handleQuantitySelect(q)}
+              onClick={() => handleQuantitySelect(q, false)}
               className={cn(
                 "px-4 py-2.5 rounded-xl text-sm border font-medium transition-all duration-150",
                 quantity === q

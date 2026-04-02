@@ -29,6 +29,7 @@ export default function Home() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [customConfig, setCustomConfig] = useState({ length: '', color: '' });
   const [quantity, setQuantity] = useState('');
+  const [isCustomQty, setIsCustomQty] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
   const [step, setStep] = useState(1); // 1 = config, 2 = contact
   const [submitted, setSubmitted] = useState(false);
@@ -177,6 +178,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                       onSelect={(v) => {
                         setSelectedVariant(v);
                         setQuantity('');
+                        setIsCustomQty(false);
                         setCustomConfig({ length: '', color: '', colorHex: '' });
                       }}
                     />
@@ -186,7 +188,8 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
                     config={customConfig}
                     onChange={setCustomConfig}
                     quantity={quantity}
-                    onQuantityChange={setQuantity}
+                    onQuantityChange={(q) => { setQuantity(q); }}
+                    onIsCustomQty={setIsCustomQty}
                     selectedVariant={selectedVariant}
                   />
 
@@ -196,7 +199,7 @@ ${contact.notes ? `<p><strong>Anmerkungen:</strong> ${contact.notes}</p>` : ''}
 
                   <TowelPreview variant={selectedVariant} color={activeConfig.color} size={activeConfig.length} />
 
-                  <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} quantity={quantity} />
+                  <ConfigSummary config={activeConfig} logoUrl={logoUrl} variant={selectedVariant} quantity={quantity} isCustomQty={isCustomQty} />
 
                   {step === 1 && (
                     <div className="text-center pt-4 space-y-2">

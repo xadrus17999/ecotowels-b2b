@@ -2,19 +2,19 @@ import React from 'react';
 import { Ruler, Palette, Sparkles, Clock, Tag } from 'lucide-react';
 import { calculatePricePerPiece, formatPrice } from '@/lib/pricing';
 
-export default function ConfigSummary({ config, logoUrl, variant, quantity }) {
+export default function ConfigSummary({ config, logoUrl, variant, quantity, isCustomQty }) {
   if (!variant && !config.length && !config.color) return null;
 
   const isOnRequest = quantity === 'auf_anfrage';
-  const pricePerPiece = (!isOnRequest && variant && config.length && quantity)
+  const pricePerPiece = (!isOnRequest && !isCustomQty && variant && config.length && quantity)
     ? calculatePricePerPiece(variant.name, config.length, quantity)
     : null;
 
   const qty = parseInt(String(quantity || '').replace(/[^0-9]/g, '')) || 0;
   const totalPrice = pricePerPiece && qty > 0 ? pricePerPiece * qty : null;
 
-  // Show "Auf Anfrage" if quantity is set but no fixed price exists (e.g. custom qty for fixed-price variants)
-  const showPriceOnRequest = (isOnRequest || (quantity && qty > 0 && !pricePerPiece)) && variant && config.length;
+  // Show "Auf Anfrage" if on-request, custom qty, or no fixed price exists
+  const showPriceOnRequest = (isOnRequest || isCustomQty || (quantity && qty > 0 && !pricePerPiece)) && variant && config.length;
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
