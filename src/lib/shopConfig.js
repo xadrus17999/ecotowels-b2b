@@ -1,4 +1,4 @@
-export const STORAGE_KEY = 'admin_shop_config';
+export const STORAGE_KEY = 'admin_shop_config_v2';
 
 // Variants where size is selected FIRST, then quantity is filtered by size's minQuantity
 export const SIZE_FIRST_VARIANTS = ['Bordür Einwebung', 'HochTief Webung', 'Bedruckt', 'Bestickt'];
