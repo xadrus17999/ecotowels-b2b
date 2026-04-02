@@ -118,17 +118,37 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
     const rows = shopConfig.staffelpreise?.[selectedVariant.name] || [];
     const seen = new Set();
     const colors = [];
-    rows.forEach(row => {
-      const isRowOnRequest = String(row.from) === 'auf_anfrage';
-      if (isOnRequest && !isRowOnRequest) return;
-      if (!isOnRequest && isRowOnRequest) return;
-      const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;
-      if (!isOnRequest && qty < minQty) return;
-      if (row.color && !seen.has(row.color)) {
-        seen.add(row.color);
-        colors.push({ name: row.color, hex: row.colorHex || '#ffffff' });
-      }
-    });
+
+    if (isOnRequest) {
+      // Show only auf_anfrage colors
+      rows.forEach(row => {
+        if (String(row.from) === 'auf_anfrage' && row.color && !seen.has(row.color)) {
+          seen.add(row.color);
+          colors.push({ name: row.color, hex: row.colorHex || '#ffffff' });
+        }
+      });
+    } else {
+      // Find the highest applicable staffel tier (highest from <= qty)
+      const numericFroms = [...new Set(
+        rows
+          .filter(r => String(r.from) !== 'auf_anfrage')
+          .map(r => parseInt(String(r.from).replace(/[^0-9]/g, '')) || 0)
+          .filter(n => n > 0 && n <= qty)
+      )].sort((a, b) => b - a);
+
+      // Include all colors from tiers up to and including the highest applicable tier
+      const maxApplicableTier = numericFroms[0] ?? 0;
+
+      rows.forEach(row => {
+        if (String(row.from) === 'auf_anfrage') return;
+        const minQty = parseInt(String(row.from).replace(/[^0-9]/g, '')) || 0;
+        if (minQty <= maxApplicableTier && row.color && !seen.has(row.color)) {
+          seen.add(row.color);
+          colors.push({ name: row.color, hex: row.colorHex || '#ffffff' });
+        }
+      });
+    }
+
     return colors;
   }, [selectedVariant, qty, hasQuantity, isOnRequest, shopConfig]);
 
