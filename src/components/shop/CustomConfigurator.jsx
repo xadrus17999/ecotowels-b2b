@@ -179,8 +179,8 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       setCustomQtyError('Bitte eine gültige Stückzahl eingeben.');
       return;
     }
-    if (val <= minForSize) {
-      setErrorToast({ visible: true, message: `Die Wunschanzahl muss mehr als ${minForSize} Stück betragen.` });
+    if (val < minForSize) {
+      setErrorToast({ visible: true, message: `Die Mindestmenge für diese Größe beträgt ${minForSize.toLocaleString('de-DE')} Stück.` });
       return;
     }
     setCustomQtyError('');
