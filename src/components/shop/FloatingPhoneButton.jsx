@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, X, Clock } from 'lucide-react';
 
+function useIsOpen() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 6=Sat
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const timeInMinutes = hour * 60 + minute;
+  const isWeekday = day >= 1 && day <= 5;
+  return isWeekday && timeInMinutes >= 8 * 60 && timeInMinutes < 17 * 60;
+}
+
 export default function FloatingPhoneButton() {
   const [open, setOpen] = useState(false);
+  const isOpen = useIsOpen();
 
   return (
     <div className="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3">
@@ -30,6 +41,11 @@ export default function FloatingPhoneButton() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-md text-xs font-semibold ${isOpen ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-white' : 'bg-white'} animate-pulse`} />
+        {isOpen ? 'Geöffnet' : 'Geschlossen'}
+      </div>
 
       <button
         onClick={() => setOpen(!open)}
