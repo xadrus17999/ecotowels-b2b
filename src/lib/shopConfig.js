@@ -26,9 +26,9 @@ export const VARIANT_SIZE_MIN_QTY = {
     '180x100 cm': 100,
   },
   'Bestickt': {
-    '100x50 cm':  100,
-    '140x70 cm':  100,
-    '180x100 cm': 100,
+    '100x50 cm':  50,
+    '140x70 cm':  50,
+    '180x100 cm': 50,
   },
 
 };
