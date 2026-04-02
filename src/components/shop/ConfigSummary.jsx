@@ -45,7 +45,11 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
         <div className="flex items-center gap-3 text-sm">
           <Clock className="w-4 h-4 text-primary shrink-0" />
           <span className="text-muted-foreground">Lieferzeit:</span>
-          <span className="text-foreground font-medium">Lagerware 7 Tage, Anfertigung: 6–7 Wochen</span>
+          <span className="text-foreground font-medium">
+            {variant?.name === 'Bestickt'
+              ? '15–20 Arbeitstage nach Freigabe'
+              : 'Lagerware 7 Tage, Anfertigung: 6–7 Wochen'}
+          </span>
         </div>
         {logoUrl && (
           <div className="flex items-center gap-3 text-sm">
