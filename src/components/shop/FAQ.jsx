@@ -29,6 +29,11 @@ const faqs = [
     answer: 'Ja, unsere Öko-Handtücher bestehen aus 100 % biologisch angebauter Baumwolle und sind GOTS-zertifiziert. Das bedeutet: schadstoffgeprüft, fair produziert und umweltschonend hergestellt.'
   },
   {
+    icon: BadgeCheck,
+    question: 'Was bedeutet Öko-Tex 100 Zertifizierung?',
+    answer: 'Das OEKO-TEX® Standard 100 Zertifikat bestätigt, dass unsere Handtücher auf Schadstoffe geprüft wurden und keine gesundheitsschädlichen Substanzen enthalten. Jeder Bestandteil des Produkts – vom Garn bis zum Fertigartikel – wird unabhängig getestet. Das Zertifikat steht für höchste Produktsicherheit und ist ein verlässliches Qualitätsmerkmal für Ihr Unternehmen und Ihre Kunden.'
+  },
+  {
     icon: MessageCircle,
     question: 'Wie läuft der Bestellprozess ab?',
     answer: 'Sie stellen Ihre Konfiguration zusammen und senden uns eine Anfrage über dieses Formular. Wir erstellen Ihnen daraufhin ein individuelles Angebot. Nach Auftragserteilung erhalten Sie eine Druckfreigabe zur Prüfung. Erst nach Ihrer Freigabe beginnen wir mit der Produktion.'

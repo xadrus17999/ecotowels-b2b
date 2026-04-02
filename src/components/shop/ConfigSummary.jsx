@@ -96,7 +96,7 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
       {/* Marketing promise */}
       <div className="border-t border-border pt-3 mt-2 space-y-1.5">
         <p className="text-xs font-semibold text-foreground">Unser Versprechen:</p>
-        {['Unverbindliches Angebot', 'Persönlicher Ansprechpartner', 'Schnelle Bearbeitung'].map((point) => (
+        {['Unverbindliches Angebot', 'Persönlicher Ansprechpartner', 'Schnelle Bearbeitung', 'Öko-Tex 100 Zertifiziert'].map((point) => (
           <div key={point} className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="text-primary font-bold">✓</span>
             <span>{point}</span>
