@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useState } from 'react';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { Ruler, Palette, Hash } from 'lucide-react';
 import { parseQuantity } from '@/lib/pricing';
@@ -40,6 +40,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
   const sizeSectionRef = useRef(null);
   const colorSectionRef = useRef(null);
   const shopConfig = useShopConfig();
+  const { toast } = useToast();
   const [pickerHex, setPickerHex] = useState('#3b82f6');
   const [customQtyInput, setCustomQtyInput] = useState('');
   const [customQtyError, setCustomQtyError] = useState('');
@@ -179,7 +180,7 @@ export default function CustomConfigurator({ config, onChange, quantity, onQuant
       return;
     }
     if (val <= minForSize) {
-      toast.error(`Die Wunschanzahl muss mindestens ${minForSize + 1} Stück betragen (1 mehr als die Mindestmenge von ${minForSize}).`);
+      toast({ variant: 'destructive', title: 'Ungültige Stückzahl', description: `Die Wunschanzahl muss mehr als ${minForSize} Stück betragen.` });
       return;
     }
     setCustomQtyError('');
