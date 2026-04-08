@@ -51,6 +51,28 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
               : 'Lagerware 7 Tage, Anfertigung: 6–7 Wochen'}
           </span>
         </div>
+        {variant?.name === 'Bestickt' && (
+          <>
+            <div className="flex items-start gap-3 text-sm">
+              <div className="w-4 h-4 shrink-0" />
+              <span className="text-muted-foreground">Grammatur:</span>
+              <span className="text-foreground font-medium">450 gr/m²</span>
+            </div>
+            <div className="flex items-start gap-3 text-sm">
+              <div className="w-4 h-4 shrink-0" />
+              <div className="space-y-0.5">
+                {[
+                  'Material: 100% ringgesponnene Baumwolle',
+                ].map((point) => (
+                  <div key={point} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
         {variant?.name === 'HochTief Webung' && (
           <>
             <div className="flex items-start gap-3 text-sm">
