@@ -51,6 +51,13 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
               : 'Lagerware 7 Tage, Anfertigung: 6–7 Wochen'}
           </span>
         </div>
+        {variant?.name === 'HochTief Webung' && (
+          <div className="flex items-start gap-3 text-sm">
+            <div className="w-4 h-4 shrink-0" />
+            <span className="text-muted-foreground">Grammatur:</span>
+            <span className="text-foreground font-medium">450 gr/m² bis zu 600 gr/m² auf Anfrage</span>
+          </div>
+        )}
         {logoUrl && (
           <div className="flex items-center gap-3 text-sm">
             <div className="w-10 h-10 rounded-lg border border-border bg-white overflow-hidden shrink-0">
