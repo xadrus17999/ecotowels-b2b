@@ -73,6 +73,29 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
             </div>
           </>
         )}
+        {variant?.name === 'Bedruckt' && (
+          <>
+            <div className="flex items-start gap-3 text-sm">
+              <div className="w-4 h-4 shrink-0" />
+              <span className="text-muted-foreground">Grammatur:</span>
+              <span className="text-foreground font-medium">350 gr/m²</span>
+            </div>
+            <div className="flex items-start gap-3 text-sm">
+              <div className="w-4 h-4 shrink-0" />
+              <div className="space-y-0.5">
+                {[
+                  'Materialmix aus Mikrofaser und Baumwolle',
+                  'Einseitig voll bedruckbar in vollflächigem HD Druck',
+                ].map((point) => (
+                  <div key={point} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className="text-primary font-bold">✓</span>
+                    <span>{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
         {variant?.name === 'Bordür Einwebung' && (
           <>
             <div className="flex items-start gap-3 text-sm">
