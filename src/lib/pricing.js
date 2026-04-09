@@ -56,6 +56,11 @@ const FIXED_PRICE_TABLES = {
     '140x70 cm':  [{ minQty: 100, price: 10.49 }, { minQty: 50, price: 12.19 }],
     '180x100 cm': [{ minQty: 100, price: 16.99 }, { minQty: 50, price: 18.49 }],
   },
+  'Bedruckt': {
+    '100x50 cm':  [{ minQty: 100, price: 6.69 }],
+    '140x70 cm':  [{ minQty: 100, price: 10.89 }],
+    '180x100 cm': [{ minQty: 100, price: 17.89 }],
+  },
 };
 
 export function calculatePricePerPiece(variantName, size, quantity) {
