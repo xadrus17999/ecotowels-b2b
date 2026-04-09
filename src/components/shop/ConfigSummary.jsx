@@ -47,7 +47,7 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
           <span className="text-muted-foreground">Lieferzeit:</span>
           <span className="text-foreground font-medium">
             {variant?.name === 'Bestickt'
-              ? '15–20 Arbeitstage nach Freigabe'
+              ? (() => { const q = parseInt(String(quantity || '').replace(/[^0-9]/g, '')) || 0; return q >= 250 ? '7–8 Wochen nach Freigabe' : '15–20 Arbeitstage ab Freigabe'; })()
               : 'Lagerware 7 Tage, Anfertigung: 6–7 Wochen'}
           </span>
         </div>
