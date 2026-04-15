@@ -75,6 +75,12 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
         )}
         {variant?.name === 'Bedruckt' && (
           <>
+            <div className="flex items-start gap-3 text-sm col-span-full">
+              <div className="w-4 h-4 shrink-0" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Unser Bedrucktes Handtuch besteht aus einem hochwertigen Materialmix aus Mikrofaser und Baumwolle, der dem Handtuch eine flauschige Haptik mit hoher Saugkraft verleiht.
+              </p>
+            </div>
             <div className="flex items-start gap-3 text-sm">
               <div className="w-4 h-4 shrink-0" />
               <span className="text-muted-foreground">Grammatur:</span>
