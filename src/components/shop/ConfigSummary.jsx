@@ -98,6 +98,12 @@ export default function ConfigSummary({ config, logoUrl, variant, quantity, isCu
         )}
         {variant?.name === 'Bordür Einwebung' && (
           <>
+            <div className="flex items-start gap-3 text-sm col-span-full">
+              <div className="w-4 h-4 shrink-0" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Das Badetuch mit Logo ist fest in unserem Sortiment verankert und wird immer wieder gerne bestellt. Ob es sich am Ende um ein Badetuch mit Logo oder um einen bestickten Namen auf der Bordüreneinwebung handelt, können Sie selbst wählen und kreieren. Bei Fragen helfen wir Ihnen gerne weiter.
+              </p>
+            </div>
             <div className="flex items-start gap-3 text-sm">
               <div className="w-4 h-4 shrink-0" />
               <span className="text-muted-foreground">Grammatur:</span>
